@@ -38,13 +38,17 @@ export async function POST(request: Request) {
         // Memeriksa pilihan jawaban
         const isValid =
             ["18-20", "21-23", "24+"].includes(body.usia) &&
-            ["IT/Komputer", "Non-IT", "Lainnya"].includes(body.bidangStudi) &&
+            ["IT/Komputer", "Non-IT", "Lainnya"].includes(
+                body.bidangStudi
+            ) &&
             ["Ya", "Tidak"].includes(body.riwayatPelatihan) &&
             ["Ya", "Tidak"].includes(body.pengalamanPhishing) &&
             ["Ya", "Tidak"].includes(body.penggunaanMfa) &&
-            ["Jarang", "Beberapa kali/minggu", "Setiap hari"].includes(
-                body.frekuensiEmail
-            );
+            [
+                "Jarang",
+                "Beberapa kali/minggu",
+                "Setiap hari",
+            ].includes(body.frekuensiEmail);
 
         if (!isValid) {
             return NextResponse.json(
@@ -63,15 +67,58 @@ export async function POST(request: Request) {
             treatment: "Microlearning",
             usia: body.usia,
             bidang_studi: body.bidangStudi,
-            riwayat_pelatihan: body.riwayatPelatihan === "Ya",
-            pengalaman_phishing: body.pengalamanPhishing === "Ya",
-            penggunaan_mfa: body.penggunaanMfa === "Ya",
+            riwayat_pelatihan:
+                body.riwayatPelatihan === "Ya",
+            pengalaman_phishing:
+                body.pengalamanPhishing === "Ya",
+            penggunaan_mfa:
+                body.penggunaanMfa === "Ya",
             frekuensi_email: body.frekuensiEmail,
         };
 
-        // Menampilkan data yang siap disimpan
-        console.log("Data demografi siap disimpan:", dataDemografi);
+        console.log(
+            "Data demografi siap diproses:",
+            dataDemografi
+        );
 
+        // Memeriksa apakah ID responden sudah tersimpan
+        const { data: existingData, error: checkError } =
+            await supabaseAdmin
+                .from("raw_data")
+                .select("respondent_id")
+                .eq("respondent_id", body.respondentId)
+                .maybeSingle();
+
+        if (checkError) {
+            console.error(
+                "Supabase check error:",
+                checkError
+            );
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Gagal memeriksa data responden",
+                },
+                { status: 500 }
+            );
+        }
+
+        // Jika data sudah ada, tidak perlu insert ulang
+        if (existingData) {
+            console.log(
+                "Data demografi sudah tersimpan:",
+                body.respondentId
+            );
+
+            return NextResponse.json({
+                success: true,
+                alreadyExists: true,
+                message: "Data demografi sudah tersimpan",
+            });
+        }
+
+        // Menyimpan data demografi jika belum ada
         const { data, error } = await supabaseAdmin
             .from("raw_data")
             .insert(dataDemografi)
@@ -79,7 +126,29 @@ export async function POST(request: Request) {
             .single();
 
         if (error) {
-            console.error("Supabase insert error:", error.message);
+            console.error(
+                "Supabase insert error:",
+                error
+            );
+
+            // Menangani kemungkinan ID tersimpan
+            // oleh request lain pada waktu bersamaan
+            if (error.code === "23505") {
+                const { data: duplicateData, error: duplicateError } =
+                    await supabaseAdmin
+                        .from("raw_data")
+                        .select("respondent_id")
+                        .eq("respondent_id", body.respondentId)
+                        .maybeSingle();
+
+                if (!duplicateError && duplicateData) {
+                    return NextResponse.json({
+                        success: true,
+                        alreadyExists: true,
+                        message: "Data demografi sudah tersimpan",
+                    });
+                }
+            }
 
             return NextResponse.json(
                 {
@@ -90,14 +159,23 @@ export async function POST(request: Request) {
             );
         }
 
+        console.log(
+            "Data demografi berhasil disimpan:",
+            body.respondentId
+        );
+
         return NextResponse.json({
             success: true,
+            alreadyExists: false,
             message: "Data demografi berhasil disimpan",
             data,
         });
 
     } catch (error) {
-        console.error("Kesalahan API demographic:", error);
+        console.error(
+            "Kesalahan API demographic:",
+            error
+        );
 
         return NextResponse.json(
             {

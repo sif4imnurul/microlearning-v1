@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
@@ -27,7 +26,6 @@ export async function GET(request: Request) {
             );
         }
 
-        // Pastikan responden sudah menyelesaikan Pre-test.
         const { data: pretest, error: pretestError } =
             await supabaseAdmin
                 .from("pretest_responses")
@@ -42,7 +40,6 @@ export async function GET(request: Request) {
             );
         }
 
-        // Ambil progres yang sudah ada.
         let { data: progress, error } = await supabaseAdmin
             .from("microlearning_progress")
             .select("*")
@@ -53,7 +50,6 @@ export async function GET(request: Request) {
             throw error;
         }
 
-        // Jika belum ada, buat progres baru.
         if (!progress) {
             const { data: newProgress, error: insertError } =
                 await supabaseAdmin
@@ -176,9 +172,7 @@ export async function POST(request: Request) {
             `U${unitNumber}`,
         ];
 
-        const newCurrentUnit = unitNumber === 6
-            ? 7
-            : unitNumber + 1;
+        const newCurrentUnit = unitNumber === 6 ? 7 : unitNumber + 1;
 
         const newTotalSeconds =
             Number(progress.total_seconds || 0) + duration;
@@ -195,22 +189,29 @@ export async function POST(request: Request) {
             updateData.completed_at = new Date().toISOString();
         }
 
-        const { error: updateError } = await supabaseAdmin
-            .from("microlearning_progress")
-            .update(updateData)
-            .eq("respondent_id", respondentId);
+        const { data: updated, error: updateError } =
+            await supabaseAdmin
+                .from("microlearning_progress")
+                .update(updateData)
+                .eq("respondent_id", respondentId)
+                .eq("current_unit", unitNumber)
+                .select("respondent_id");
 
         if (updateError) {
             throw updateError;
         }
 
-        // Simpan durasi treatment pada baris responden yang sama.
-        const rawColumn = column;
+        if (!updated || updated.length === 0) {
+            return NextResponse.json(
+                { message: "Unit ini sudah diselesaikan." },
+                { status: 409 }
+            );
+        }
 
         const { error: rawError } = await supabaseAdmin
             .from("raw_data")
             .update({
-                [rawColumn]: duration,
+                [column]: duration,
                 total_treatment_seconds: newTotalSeconds,
             })
             .eq("respondent_id", respondentId);

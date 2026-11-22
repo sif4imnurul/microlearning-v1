@@ -1,19 +1,26 @@
-import { NextResponse } from "next/server";
+import { NextResponse, connection } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
     try {
+        await connection();
+
         const { searchParams } = new URL(request.url);
         const respondentId = searchParams.get("respondentId");
 
         if (!respondentId || !respondentId.startsWith("A03-")) {
-            return NextResponse.json({ stage: "demographic" });
+            return NextResponse.json(
+                { success: false, message: "Respondent ID tidak valid." },
+                { status: 400 }
+            );
         }
 
-        const [demo, pre, post, progress] = await Promise.all([
+        const [rawRes, preRes, mlRes, postRes] = await Promise.all([
             supabaseAdmin
                 .from("raw_data")
-                .select("respondent_id")
+                .select("respondent_id, is_completed, session_type")
                 .eq("respondent_id", respondentId)
                 .maybeSingle(),
             supabaseAdmin
@@ -22,51 +29,47 @@ export async function GET(request: Request) {
                 .eq("respondent_id", respondentId)
                 .maybeSingle(),
             supabaseAdmin
+                .from("microlearning_progress")
+                .select("respondent_id, completed_units, total_seconds")
+                .eq("respondent_id", respondentId)
+                .maybeSingle(),
+            supabaseAdmin
                 .from("posttest_responses")
                 .select("respondent_id")
                 .eq("respondent_id", respondentId)
                 .maybeSingle(),
-            supabaseAdmin
-                .from("microlearning_progress")
-                .select("current_unit")
-                .eq("respondent_id", respondentId)
-                .maybeSingle(),
         ]);
 
-        if (demo.error || pre.error || post.error || progress.error) {
+        if (rawRes.error) throw rawRes.error;
+        if (preRes.error) throw preRes.error;
+        if (mlRes.error) throw mlRes.error;
+        if (postRes.error) throw postRes.error;
+
+        if (!rawRes.data) {
             return NextResponse.json(
-                { message: "Gagal memeriksa status." },
-                { status: 500 }
+                { success: false, message: "Data responden tidak ditemukan." },
+                { status: 404 }
             );
         }
 
-        if (!demo.data) {
-            return NextResponse.json({ stage: "demographic" });
-        }
-
-        if (!pre.data) {
-            return NextResponse.json({ stage: "pretest" });
-        }
-
-        if (post.data) {
-            return NextResponse.json({ stage: "done" });
-        }
-
-        const currentUnit = progress.data?.current_unit ?? 1;
-
-        if (currentUnit >= 7) {
-            return NextResponse.json({ stage: "posttest" });
-        }
+        const completedUnitsCount = Array.isArray(mlRes.data?.completed_units)
+            ? mlRes.data.completed_units.length
+            : 0;
 
         return NextResponse.json({
-            stage: "microlearning",
-            currentUnit,
+            success: true,
+            respondent_id: respondentId,
+            session_type: rawRes.data.session_type,
+            has_pretest: Boolean(preRes.data),
+            completed_units_count: completedUnitsCount,
+            total_treatment_seconds: Number(mlRes.data?.total_seconds ?? 0),
+            has_posttest: Boolean(postRes.data),
+            is_completed: Boolean(rawRes.data.is_completed),
         });
     } catch (error) {
         console.error("Status API error:", error);
-
         return NextResponse.json(
-            { message: "Terjadi kesalahan pada server." },
+            { success: false, message: "Gagal memuat status responden." },
             { status: 500 }
         );
     }

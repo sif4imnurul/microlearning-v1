@@ -1,75 +1,121 @@
+import {
+    Bullets,
+    Key,
+    Mock,
+    NextHint,
+    Note,
+    Section,
+    Table,
+    UnitFooter,
+    UnitHeader,
+    type UnitProps,
+} from "@/components/microlearning/UnitParts";
 
-type Props = {
-    seconds: number;
-    isSaving: boolean;
-    errorMessage: string;
-    onFinish: () => void;
-};
-
-export default function Unit1({ seconds, isSaving, errorMessage, onFinish }: Props) {
+export default function Unit1(props: UnitProps) {
     return (
-        <article className="space-y-6 text-slate-700">
-            <header>
-                <p className="text-sm font-medium text-slate-500">UNIT 1 DARI 6</p>
-                <h1 className="mt-2 text-2xl font-bold text-[#172B45]">
-                    Mengenali Pemalsuan Pengirim dan Domain
-                </h1>
-                <p className="mt-2">Pelajari cara mengenali identitas pengirim dan alamat domain yang mencurigakan.</p>
-            </header>
+        <article className="space-y-6">
+            <UnitHeader
+                title="Unit 1: Kenali Siapa Pengirimnya"
+                meta="Microlearning A03 · Unit 1 dari 6"
+            />
 
-            <section className="space-y-4 leading-7">
-                <h2 className="text-lg font-semibold text-[#172B45]">1. Periksa identitas pengirim</h2>
+            <Section title="Tujuan">
                 <p>
-                    Pelaku phishing sering menyamar sebagai pihak yang dikenal, seperti bank,
-                    layanan digital, institusi pendidikan, atau perusahaan tertentu. Nama yang
-                    terlihat pada email belum tentu menunjukkan identitas pengirim sebenarnya.
+                    Setelah unit ini, Anda dapat membedakan nama tampilan dari
+                    alamat pengirim yang sebenarnya.
                 </p>
-                <p>
-                    Jangan hanya melihat nama pengirim. Periksa alamat email secara lengkap,
-                    termasuk bagian setelah tanda @.
-                </p>
+            </Section>
 
-                <h2 className="text-lg font-semibold text-[#172B45]">2. Perhatikan nama domain</h2>
-                <p>
-                    Domain palsu dapat dibuat menyerupai domain resmi dengan menambahkan
-                    karakter, mengganti huruf, atau menggunakan ekstensi domain yang berbeda.
-                </p>
+            <Section title="Konsep Utama">
+                <Key>
+                    Nama tampilan bisa dipalsukan. Periksa alamat dan domain
+                    pengirim.
+                </Key>
 
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                    <p className="font-semibold text-[#172B45]">Contoh ilustrasi</p>
-                    <p className="mt-2 text-sm">Domain resmi: <strong>contoh-bank.com</strong></p>
-                    <p className="text-sm">Domain mencurigakan: <strong>contoh-b4nk.com</strong></p>
-                    <p className="mt-3 text-sm">Perubahan satu karakter dapat membuat alamat terlihat mirip, tetapi mengarah ke pihak berbeda.</p>
-                </div>
-
-                <h2 className="text-lg font-semibold text-[#172B45]">3. Jangan langsung percaya pada nama tampilan</h2>
                 <p>
-                    Nama pengirim seperti Administrator, Customer Service, atau Tim Keamanan
-                    dapat digunakan oleh siapa saja. Lakukan pemeriksaan melalui alamat dan
-                    saluran komunikasi resmi.
+                    Nama tampilan hanyalah teks yang bisa ditulis siapa saja,
+                    misalnya nama bank atau layanan yang Anda kenal. Domain
+                    palsu sering dibuat mirip dengan yang asli dengan menambah
+                    kata, mengganti huruf, atau memakai ekstensi lain. Tiga hal
+                    yang perlu dibedakan:
                 </p>
 
-                <div className="rounded-lg border border-[#172B45]/20 p-4">
-                    <p className="font-semibold text-[#172B45]">Hal yang perlu diingat</p>
-                    <p className="mt-2 text-sm">Periksa alamat pengirim dan domain sebelum mempercayai pesan atau mengikuti instruksinya.</p>
-                </div>
-            </section>
+                <Table
+                    head={["Bagian", "Yang perlu dilakukan"]}
+                    rows={[
+                        [
+                            "Nama tampilan",
+                            "Bisa ditulis siapa saja, jadi belum membuktikan apa pun",
+                        ],
+                        [
+                            "Alamat email",
+                            "Baca lengkap, terutama domain di belakang tanda @",
+                        ],
+                        [
+                            "Domain",
+                            "Bandingkan dengan domain resmi yang Anda kenal",
+                        ],
+                    ]}
+                />
+            </Section>
 
-            <UnitFooter seconds={seconds} isSaving={isSaving} errorMessage={errorMessage} onFinish={onFinish} />
+            <Section title="Contoh">
+                <Note>
+                    Contoh fiktif untuk latihan. Nama, perusahaan, dan alamat
+                    hanya rekaan.
+                </Note>
+
+                <Mock>
+                    <p>
+                        <strong>Dari:</strong> Bank Contoh Care <strong>(1)</strong>{" "}
+                        &lt;cs@bankcontoh-notifikasi.example&gt;{" "}
+                        <strong>(2)</strong>
+                    </p>
+                    <p>
+                        <strong>Perihal:</strong> Pemberitahuan layanan
+                    </p>
+
+                    <hr className="border-slate-200" />
+
+                    <p>
+                        Yth. Nasabah, terdapat pembaruan layanan pada akun Anda.
+                    </p>
+                </Mock>
+
+                <p className="font-medium text-slate-800">
+                    Penjelasan pada email di atas:
+                </p>
+
+                <Bullets
+                    items={[
+                        <>
+                            <strong>Nama tampilan.</strong> &ldquo;Bank Contoh
+                            Care&rdquo; bisa ditulis siapa saja, jadi belum
+                            membuktikan apa pun.
+                        </>,
+                        <>
+                            <strong>Alamat dan domain.</strong>{" "}
+                            bankcontoh-notifikasi.example berbeda dari domain
+                            resmi bank yang Anda kenal, yaitu bankcontoh.example.
+                        </>,
+                    ]}
+                />
+            </Section>
+
+            <Section title="Tindakan Aman: Baca alamat lengkapnya, lalu bandingkan">
+                <Bullets
+                    items={[
+                        "Lihat alamat email lengkap dan domainnya, bukan hanya nama pengirim.",
+                        "Bandingkan dengan alamat resmi yang Anda ketahui dari kanal resmi.",
+                        "Jika berbeda atau Anda ragu, jangan klik dan jangan balas dulu.",
+                        "Pemeriksaan ini untuk memastikan, bukan untuk mencurigai semua pesan.",
+                    ]}
+                />
+            </Section>
+
+            <NextHint>Berikutnya: Unit 2 · Jangan mudah terpancing</NextHint>
+
+            <UnitFooter unit={1} {...props} />
         </article>
-    );
-}
-
-function UnitFooter({ seconds, isSaving, errorMessage, onFinish }: Props) {
-    return (
-        <footer className="space-y-4 border-t border-slate-200 pt-6">
-            <p className="text-sm text-slate-500">
-                Waktu membaca: {Math.floor(seconds / 60)} menit {seconds % 60} detik
-            </p>
-            {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
-            <button onClick={onFinish} disabled={isSaving} className="w-full rounded-lg bg-[#172B45] px-5 py-3 font-medium text-white hover:bg-[#243F60] disabled:opacity-50">
-                {isSaving ? "Menyimpan..." : "Selesaikan Unit 1"}
-            </button>
-        </footer>
     );
 }

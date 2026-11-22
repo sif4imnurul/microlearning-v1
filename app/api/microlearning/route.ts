@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, connection } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 const UNIT_COLUMNS = [
@@ -16,6 +16,8 @@ function validRespondentId(value: unknown): value is string {
 
 export async function GET(request: Request) {
     try {
+        await connection();
+
         const { searchParams } = new URL(request.url);
         const respondentId = searchParams.get("respondentId");
 
@@ -58,26 +60,50 @@ export async function GET(request: Request) {
                         respondent_id: respondentId,
                         current_unit: 1,
                         completed_units: [],
+                        total_seconds: 0,
                     })
                     .select("*")
                     .single();
 
             if (insertError) {
-                throw insertError;
-            }
+                if (insertError.code === "23505") {
+                    const { data: existingProgress, error: retryError } =
+                        await supabaseAdmin
+                            .from("microlearning_progress")
+                            .select("*")
+                            .eq("respondent_id", respondentId)
+                            .single();
 
-            progress = newProgress;
+                    if (retryError || !existingProgress) {
+                        throw retryError ?? insertError;
+                    }
+
+                    progress = existingProgress;
+                } else {
+                    throw insertError;
+                }
+            } else {
+                progress = newProgress;
+            }
         }
 
         return NextResponse.json({
             success: true,
             progress,
         });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Microlearning GET error:", error);
+        const detail =
+            error && typeof error === "object" && "message" in error
+                ? String((error as { message: string }).message)
+                : "";
 
         return NextResponse.json(
-            { message: "Gagal mengambil progres Microlearning." },
+            {
+                message: detail
+                    ? `Gagal mengambil progres Microlearning: ${detail}`
+                    : "Gagal mengambil progres Microlearning.",
+            },
             { status: 500 }
         );
     }
@@ -89,7 +115,10 @@ export async function POST(request: Request) {
 
         const respondentId = body?.respondentId;
         const unitNumber = Number(body?.unitNumber);
-        const duration = Number(body?.duration);
+        const rawDuration = Number(body?.duration);
+        const duration = Number.isFinite(rawDuration)
+            ? Math.max(1, Math.round(rawDuration))
+            : NaN;
 
         if (!validRespondentId(respondentId)) {
             return NextResponse.json(
@@ -166,27 +195,22 @@ export async function POST(request: Request) {
         }
 
         const column = UNIT_COLUMNS[unitNumber - 1];
-
-        const newCompletedUnits = [
-            ...completedUnits,
-            `U${unitNumber}`,
-        ];
-
+        const newCompletedUnits = [...completedUnits, `U${unitNumber}`];
         const newCurrentUnit = unitNumber === 6 ? 7 : unitNumber + 1;
-
         const newTotalSeconds =
             Number(progress.total_seconds || 0) + duration;
+        const nowISO = new Date().toISOString();
 
         const updateData: Record<string, unknown> = {
             [column]: duration,
             completed_units: newCompletedUnits,
             current_unit: newCurrentUnit,
             total_seconds: newTotalSeconds,
-            updated_at: new Date().toISOString(),
+            updated_at: nowISO,
         };
 
         if (unitNumber === 6) {
-            updateData.completed_at = new Date().toISOString();
+            updateData.completed_at = nowISO;
         }
 
         const { data: updated, error: updateError } =
@@ -208,29 +232,25 @@ export async function POST(request: Request) {
             );
         }
 
-        const { error: rawError } = await supabaseAdmin
-            .from("raw_data")
-            .update({
-                [column]: duration,
-                total_treatment_seconds: newTotalSeconds,
-            })
-            .eq("respondent_id", respondentId);
-
-        if (rawError) {
-            throw rawError;
-        }
-
         return NextResponse.json({
             success: true,
             message: `Unit ${unitNumber} berhasil diselesaikan.`,
             nextUnit: newCurrentUnit,
             totalSeconds: newTotalSeconds,
         });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Microlearning POST error:", error);
+        const detail =
+            error && typeof error === "object" && "message" in error
+                ? String((error as { message: string }).message)
+                : "";
 
         return NextResponse.json(
-            { message: "Gagal menyimpan progres Microlearning." },
+            {
+                message: detail
+                    ? `Gagal menyimpan progres Microlearning: ${detail}`
+                    : "Gagal menyimpan progres Microlearning.",
+            },
             { status: 500 }
         );
     }

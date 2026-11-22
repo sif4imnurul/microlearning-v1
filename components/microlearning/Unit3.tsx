@@ -1,75 +1,129 @@
+import {
+    Bullets,
+    FakeButton,
+    Key,
+    Mock,
+    NextHint,
+    Note,
+    Section,
+    Table,
+    UnitFooter,
+    UnitHeader,
+    type UnitProps,
+} from "@/components/microlearning/UnitParts";
 
-type Props = {
-    seconds: number;
-    isSaving: boolean;
-    errorMessage: string;
-    onFinish: () => void;
-};
-
-export default function Unit3({ seconds, isSaving, errorMessage, onFinish }: Props) {
+export default function Unit3(props: UnitProps) {
     return (
-        <article className="space-y-6 text-slate-700">
-            <header>
-                <p className="text-sm font-medium text-slate-500">UNIT 3 DARI 6</p>
-                <h1 className="mt-2 text-2xl font-bold text-[#172B45]">
-                    Mengenali Tautan dan Keamanan HTTPS
-                </h1>
-                <p className="mt-2">Pelajari cara memeriksa tautan sebelum membuka halaman web.</p>
-            </header>
+        <article className="space-y-6">
+            <UnitHeader
+                title="Unit 3: Periksa Tautan dan Gembok"
+                meta="Microlearning A03 · Unit 3 dari 6"
+            />
 
-            <section className="space-y-4 leading-7">
-                <h2 className="text-lg font-semibold text-[#172B45]">1. Periksa alamat tautan</h2>
+            <Section title="Tujuan">
                 <p>
-                    Tautan phishing dapat dibuat menyerupai alamat situs resmi. Pelaku dapat
-                    menggunakan nama domain yang mirip, tambahan karakter, atau alamat yang
-                    tidak berhubungan dengan layanan yang disebutkan.
+                    Setelah unit ini, Anda dapat memeriksa domain tujuan sebuah
+                    tautan dan memahami batas dari tanda HTTPS.
                 </p>
+            </Section>
+
+            <Section title="Konsep Utama">
+                <Key>
+                    Teks pada tombol bukan tujuan sebenarnya. HTTPS mengamankan
+                    koneksi, bukan membuktikan situs tepercaya.
+                </Key>
+
                 <p>
-                    Sebelum membuka tautan, periksa alamat tujuan dengan teliti. Pada komputer,
-                    arahkan kursor ke tautan untuk melihat alamat tujuan tanpa membukanya.
+                    Tulisan atau tombol dapat dibuat berbeda dari alamat yang
+                    dibuka saat ditekan. Gembok atau HTTPS berarti data yang
+                    dikirim tidak mudah disadap di tengah jalan, tetapi pemilik
+                    situs tetap bisa siapa saja, termasuk pelaku penipuan. Dua
+                    hal yang perlu dibedakan:
                 </p>
 
-                <h2 className="text-lg font-semibold text-[#172B45]">2. Memahami HTTPS</h2>
-                <p>
-                    HTTPS menggunakan enkripsi untuk melindungi komunikasi antara browser dan
-                    situs web. Namun, keberadaan HTTPS tidak menjamin bahwa situs tersebut
-                    merupakan situs resmi atau aman dari penipuan.
-                </p>
+                <Table
+                    head={["Yang terlihat", "Artinya"]}
+                    rows={[
+                        [
+                            "Teks pada tombol atau tautan",
+                            "Belum tentu sama dengan alamat tujuan sebenarnya",
+                        ],
+                        [
+                            "Gembok atau HTTPS",
+                            "Koneksi aman, tetapi bukan bukti situs tepercaya",
+                        ],
+                    ]}
+                />
+            </Section>
 
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                    <p className="font-semibold text-[#172B45]">Perlu diperhatikan</p>
-                    <p className="mt-2 text-sm">
-                        Situs palsu juga dapat menggunakan HTTPS. Jangan hanya mengandalkan ikon
-                        gembok atau awalan https://.
+            <Section title="Contoh">
+                <Note>
+                    Contoh fiktif untuk latihan. Nama, perusahaan, dan alamat
+                    hanya rekaan.
+                </Note>
+
+                <Mock>
+                    <p>
+                        <strong>Subjek:</strong> Paket Anda tertahan
                     </p>
-                </div>
 
-                <h2 className="text-lg font-semibold text-[#172B45]">3. Akses situs melalui alamat resmi</h2>
-                <p>
-                    Jika menerima tautan yang meminta login atau verifikasi akun, lebih baik
-                    buka browser dan ketik alamat situs resmi secara langsung. Kamu juga dapat
-                    menggunakan aplikasi resmi yang sudah terpasang.
+                    <hr className="border-slate-200" />
+
+                    <p>
+                        Paket belum dapat dikirim. Lacak statusnya melalui
+                        tombol di bawah.
+                    </p>
+
+                    <FakeButton>Lacak paket</FakeButton>
+
+                    <p>
+                        <strong>Teks yang terlihat:</strong>{" "}
+                        kurircontoh.example/lacak <strong>(1)</strong>
+                    </p>
+                    <p>
+                        <strong>Tujuan asli saat ditekan:</strong>{" "}
+                        kurircontoh-cek.example/track <strong>(2)</strong> ·
+                        HTTPS dengan gembok <strong>(3)</strong>
+                    </p>
+                </Mock>
+
+                <p className="font-medium text-slate-800">
+                    Penjelasan tanda bahaya pada email di atas:
                 </p>
 
-                <div className="rounded-lg border border-[#172B45]/20 p-4">
-                    <p className="font-semibold text-[#172B45]">Hal yang perlu diingat</p>
-                    <p className="mt-2 text-sm">Periksa domain dan alamat tujuan. HTTPS saja tidak cukup untuk membuktikan sebuah situs dapat dipercaya.</p>
-                </div>
-            </section>
+                <Bullets
+                    items={[
+                        <>
+                            <strong>Teks tidak sama dengan tujuan.</strong> Yang
+                            tertulis pada tombol berbeda dari alamat yang
+                            sebenarnya dibuka.
+                        </>,
+                        <>
+                            <strong>Domain tujuan berbeda.</strong> Domain
+                            tujuan tidak sama dengan domain jasa kurir yang Anda
+                            kenal.
+                        </>,
+                        <>
+                            <strong>Gembok bukan jaminan.</strong> Ada gembok,
+                            tetapi itu tidak mengubah poin sebelumnya.
+                        </>,
+                    ]}
+                />
+            </Section>
 
-            <UnitFooter seconds={seconds} isSaving={isSaving} errorMessage={errorMessage} onFinish={onFinish} />
+            <Section title="Tindakan Aman: Periksa tujuan sebelum menekan">
+                <Bullets
+                    items={[
+                        "Arahkan kursor atau tekan lama pada tautan untuk melihat alamat tujuan.",
+                        "Jika domain tidak sesuai atau Anda ragu, jangan klik.",
+                        "Ketik sendiri alamat resmi atau buka aplikasi resminya.",
+                    ]}
+                />
+            </Section>
+
+            <NextHint>Berikutnya: Unit 4 · Waspadai lampiran dan QR</NextHint>
+
+            <UnitFooter unit={3} {...props} />
         </article>
-    );
-}
-
-function UnitFooter({ seconds, isSaving, errorMessage, onFinish }: Props) {
-    return (
-        <footer className="space-y-4 border-t border-slate-200 pt-6">
-            <p className="text-sm text-slate-500">Waktu membaca: {Math.floor(seconds / 60)} menit {seconds % 60} detik</p>
-            {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
-            <button onClick={onFinish} disabled={isSaving} className="w-full rounded-lg bg-[#172B45] px-5 py-3 font-medium text-white hover:bg-[#243F60] disabled:opacity-50">
-                {isSaving ? "Menyimpan..." : "Selesaikan Unit 3"}
-            </button>
-        </footer>
     );
 }

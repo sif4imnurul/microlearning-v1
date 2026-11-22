@@ -1,84 +1,135 @@
+import {
+    Bullets,
+    FakeButton,
+    Key,
+    Mock,
+    NextHint,
+    Note,
+    Section,
+    Table,
+    UnitFooter,
+    UnitHeader,
+    type UnitProps,
+} from "@/components/microlearning/UnitParts";
 
-type Props = {
-    seconds: number;
-    isSaving: boolean;
-    errorMessage: string;
-    onFinish: () => void;
-};
-
-export default function Unit5({ seconds, isSaving, errorMessage, onFinish }: Props) {
+export default function Unit5(props: UnitProps) {
     return (
-        <article className="space-y-6 text-slate-700">
-            <header>
-                <p className="text-sm font-medium text-slate-500">UNIT 5 DARI 6</p>
-                <h1 className="mt-2 text-2xl font-bold text-[#172B45]">
-                    Melindungi OTP dan Multi-Factor Authentication
-                </h1>
-                <p className="mt-2">Pahami pentingnya menjaga kode verifikasi dan keamanan autentikasi akun.</p>
-            </header>
+        <article className="space-y-6">
+            <UnitHeader
+                title="Unit 5: Kode Rahasia dan MFA"
+                meta="Microlearning A03 · Unit 5 dari 6"
+            />
 
-            <section className="space-y-4 leading-7">
-                <h2 className="text-lg font-semibold text-[#172B45]">1. Mengenal OTP</h2>
+            <Section title="Tujuan">
                 <p>
-                    One-Time Password (OTP) adalah kode sekali pakai yang digunakan sebagai
-                    bagian dari proses verifikasi identitas. Kode ini biasanya dikirim melalui
-                    SMS, email, atau aplikasi autentikasi.
+                    Setelah unit ini, Anda tidak memberikan kode rahasia kepada
+                    siapa pun dan menolak permintaan persetujuan MFA yang tidak
+                    Anda mulai sendiri.
                 </p>
-                <p>
-                    OTP bersifat rahasia. Pihak lain yang memperoleh kode tersebut berpotensi
-                    menyalahgunakannya untuk mengakses akun.
-                </p>
+            </Section>
 
-                <h2 className="text-lg font-semibold text-[#172B45]">2. Jangan membagikan kode verifikasi</h2>
+            <Section title="Konsep Utama">
+                <Key>
+                    Password, PIN, OTP, dan recovery code tidak diberikan lewat
+                    email, chat, atau telepon. Jangan menyetujui prompt MFA yang
+                    tidak Anda mulai sendiri.
+                </Key>
+
                 <p>
-                    Pelaku social engineering dapat berpura-pura menjadi petugas layanan dan
-                    meminta kode OTP dengan alasan verifikasi, pembatalan transaksi, atau
-                    pemulihan akun.
-                </p>
-                <p>
-                    Jangan pernah memberikan OTP kepada orang lain, termasuk kepada pihak
-                    yang mengaku sebagai petugas resmi.
+                    Petugas yang sebenarnya tidak perlu mengetahui kode
+                    tersebut. Siapa pun yang memintanya, termasuk yang mengaku
+                    dari layanan resmi, patut dicurigai. MFA tetap dianjurkan
+                    untuk akun penting.
                 </p>
 
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                    <p className="font-semibold text-[#172B45]">Contoh ilustrasi</p>
-                    <p className="mt-2 text-sm">
-                        Seseorang menghubungi pengguna dan meminta kode verifikasi yang baru saja
-                        diterima dengan alasan membantu proses keamanan akun.
-                    </p>
-                    <p className="mt-3 text-sm">Permintaan kode verifikasi dari orang lain merupakan tanda bahaya.</p>
+                <Table
+                    head={["Situasi", "Sikap yang aman"]}
+                    rows={[
+                        [
+                            "Diminta password, PIN, OTP, atau recovery code",
+                            "Tidak diberikan lewat email, chat, atau telepon",
+                        ],
+                        [
+                            "Muncul prompt MFA yang tidak Anda mulai",
+                            "Tolak",
+                        ],
+                        [
+                            "MFA pada akun penting",
+                            "Tetap dianjurkan",
+                        ],
+                    ]}
+                />
+            </Section>
+
+            <Section title="Contoh">
+                <Note>
+                    Contoh fiktif untuk latihan. Nama, perusahaan, dan alamat
+                    hanya rekaan.
+                </Note>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <Mock>
+                        <p className="text-xs font-semibold tracking-wide text-slate-500">
+                            TELEPON MASUK
+                        </p>
+                        <p className="font-semibold text-slate-900">
+                            CS e-wallet Contoh
+                        </p>
+                        <p>
+                            &ldquo;Sebutkan kode OTP Anda untuk membatalkan
+                            transaksi.&rdquo; <strong>(1)</strong>
+                        </p>
+                    </Mock>
+
+                    <Mock>
+                        <p className="text-xs font-semibold tracking-wide text-slate-500">
+                            NOTIFIKASI BEBERAPA SAAT KEMUDIAN
+                        </p>
+                        <p className="font-semibold text-slate-900">
+                            Setujui login? <strong>(2)</strong>
+                        </p>
+                        <p>Perangkat tidak dikenal. Anda tidak sedang login.</p>
+                        <div className="flex gap-2">
+                            <FakeButton muted>Setujui</FakeButton>
+                            <FakeButton>Tolak</FakeButton>
+                        </div>
+                    </Mock>
                 </div>
 
-                <h2 className="text-lg font-semibold text-[#172B45]">3. Memahami MFA</h2>
-                <p>
-                    Multi-Factor Authentication (MFA) menambahkan lapisan keamanan dengan
-                    meminta lebih dari satu faktor autentikasi. Contohnya kombinasi kata
-                    sandi dan aplikasi autentikasi.
-                </p>
-                <p>
-                    Jika menerima permintaan persetujuan login yang tidak kamu lakukan,
-                    jangan menyetujuinya. Segera periksa keamanan akun melalui layanan resmi.
+                <p className="font-medium text-slate-800">
+                    Penjelasan tanda bahaya pada contoh di atas:
                 </p>
 
-                <div className="rounded-lg border border-[#172B45]/20 p-4">
-                    <p className="font-semibold text-[#172B45]">Hal yang perlu diingat</p>
-                    <p className="mt-2 text-sm">Jaga kerahasiaan OTP dan jangan menyetujui permintaan autentikasi yang tidak kamu lakukan.</p>
-                </div>
-            </section>
+                <Bullets
+                    items={[
+                        <>
+                            <strong>Kode OTP diminta lewat telepon.</strong> Kode
+                            ini adalah kunci akun Anda dan tidak boleh
+                            disebutkan.
+                        </>,
+                        <>
+                            <strong>Persetujuan yang tidak Anda mulai.</strong>{" "}
+                            Permintaan muncul padahal Anda tidak sedang login.
+                            Bisa jadi pelaku sedang mencoba masuk dan menunggu
+                            Anda menyetujui.
+                        </>,
+                    ]}
+                />
+            </Section>
 
-            <UnitFooter seconds={seconds} isSaving={isSaving} errorMessage={errorMessage} onFinish={onFinish} />
+            <Section title="Tindakan Aman: Kode tetap rahasia, permintaan asing ditolak">
+                <Bullets
+                    items={[
+                        "Jangan menyebutkan atau mengirim kode dalam bentuk apa pun.",
+                        "Tolak permintaan persetujuan yang tidak Anda mulai.",
+                        "Setelah itu, cek aktivitas dan ganti password melalui aplikasi atau situs resmi.",
+                    ]}
+                />
+            </Section>
+
+            <NextHint>Berikutnya: Unit 6 · Verifikasi dan laporkan</NextHint>
+
+            <UnitFooter unit={5} {...props} />
         </article>
-    );
-}
-
-function UnitFooter({ seconds, isSaving, errorMessage, onFinish }: Props) {
-    return (
-        <footer className="space-y-4 border-t border-slate-200 pt-6">
-            <p className="text-sm text-slate-500">Waktu membaca: {Math.floor(seconds / 60)} menit {seconds % 60} detik</p>
-            {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
-            <button onClick={onFinish} disabled={isSaving} className="w-full rounded-lg bg-[#172B45] px-5 py-3 font-medium text-white hover:bg-[#243F60] disabled:opacity-50">
-                {isSaving ? "Menyimpan..." : "Selesaikan Unit 5"}
-            </button>
-        </footer>
     );
 }

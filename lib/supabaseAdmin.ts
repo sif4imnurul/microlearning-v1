@@ -1,22 +1,14 @@
-
-import "server-only";
-
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseServiceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
 
-if (!supabaseUrl || !supabaseSecretKey) {
-    throw new Error("Konfigurasi Supabase belum lengkap");
+if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error(
+        "Variabel SUPABASE_URL atau SUPABASE_SERVICE_ROLE_KEY belum diatur di .env.local"
+    );
 }
 
-export const supabaseAdmin = createClient(
-    supabaseUrl,
-    supabaseSecretKey,
-    {
-        auth: {
-            autoRefreshToken: false,
-            persistSession: false,
-        },
-    }
-);
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);

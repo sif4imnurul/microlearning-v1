@@ -1,74 +1,148 @@
+import {
+    Bullets,
+    FakeButton,
+    Key,
+    Mock,
+    NextHint,
+    Note,
+    Section,
+    Table,
+    UnitFooter,
+    UnitHeader,
+    type UnitProps,
+} from "@/components/microlearning/UnitParts";
 
-type Props = {
-    seconds: number;
-    isSaving: boolean;
-    errorMessage: string;
-    onFinish: () => void;
-};
-
-export default function Unit2({ seconds, isSaving, errorMessage, onFinish }: Props) {
+export default function Unit2(props: UnitProps) {
     return (
-        <article className="space-y-6 text-slate-700">
-            <header>
-                <p className="text-sm font-medium text-slate-500">UNIT 2 DARI 6</p>
-                <h1 className="mt-2 text-2xl font-bold text-[#172B45]">
-                    Mengenali Tekanan Urgensi dan Otoritas
-                </h1>
-                <p className="mt-2">Kenali teknik manipulasi psikologis yang mendorong korban mengambil keputusan terburu-buru.</p>
-            </header>
+        <article className="space-y-6">
+            <UnitHeader
+                title="Unit 2: Jangan Mudah Terpancing"
+                meta="Microlearning A03 · Unit 2 dari 6"
+            />
 
-            <section className="space-y-4 leading-7">
-                <h2 className="text-lg font-semibold text-[#172B45]">1. Tekanan urgensi</h2>
+            <Section title="Tujuan">
                 <p>
-                    Pelaku phishing sering menciptakan situasi seolah-olah korban harus segera
-                    bertindak. Pesan dapat menyebutkan akun akan diblokir, transaksi dibatalkan,
-                    atau kesempatan tertentu segera berakhir.
+                    Setelah unit ini, Anda dapat mengenali tekanan di dalam
+                    pesan sebagai tanda bahaya, bukan tanda bahwa pesan itu
+                    asli.
                 </p>
+            </Section>
+
+            <Section title="Konsep Utama">
+                <Key>
+                    Jabatan tinggi, ancaman, dan tenggat singkat bukan bukti
+                    bahwa pesan itu asli.
+                </Key>
+
                 <p>
-                    Tujuannya membuat korban panik sehingga tidak sempat memeriksa kebenaran informasi.
+                    Pelaku sengaja membuat Anda takut atau segan supaya Anda
+                    bertindak cepat sebelum sempat berpikir. Lima pemicu yang
+                    sering dipakai:
                 </p>
 
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                    <p className="font-semibold text-[#172B45]">Contoh ilustrasi</p>
-                    <p className="mt-2 text-sm">
-                        "Akun Anda akan dinonaktifkan dalam 10 menit. Segera lakukan verifikasi melalui tautan berikut."
+                <Table
+                    head={["Pemicu", "Contoh"]}
+                    rows={[
+                        [
+                            "Jabatan tinggi",
+                            "Mengatasnamakan direktur, dekan, atau pimpinan",
+                        ],
+                        ["Ancaman", "Akun ditutup, data dihapus"],
+                        [
+                            "Tenggat singkat",
+                            "\u201CDalam 1 jam\u201D, \u201Chari ini juga\u201D",
+                        ],
+                        ["Rasa takut", "Denda, sanksi, masalah hukum"],
+                        ["Hadiah", "Menang undian, bonus, voucher"],
+                    ]}
+                />
+            </Section>
+
+            <Section title="Contoh">
+                <Note>
+                    Contoh fiktif untuk latihan. Nama, perusahaan, dan alamat
+                    hanya rekaan.
+                </Note>
+
+                <Mock>
+                    <p>
+                        <strong>Dari:</strong> Hendra Wirakusuma
+                        hendra@contoh-perusahaan.example
                     </p>
-                    <p className="mt-3 text-sm">Ancaman batas waktu yang mendesak perlu diperiksa kebenarannya.</p>
-                </div>
+                    <p>
+                        <strong>Kepada:</strong> Anda
+                    </p>
+                    <p>
+                        <strong>Subjek:</strong> [SEGERA] Akun email Anda
+                        ditutup pukul 15.00
+                    </p>
 
-                <h2 className="text-lg font-semibold text-[#172B45]">2. Penyalahgunaan otoritas</h2>
-                <p>
-                    Pelaku dapat berpura-pura menjadi atasan, dosen, petugas bank, atau pihak
-                    berwenang. Mereka memanfaatkan rasa hormat dan kepercayaan korban terhadap
-                    figur otoritas.
+                    <hr className="border-slate-200" />
+
+                    <p>Selamat siang,</p>
+
+                    <p>
+                        Saya sedang rapat dan tidak bisa ditelepon. Akun email
+                        Anda akan <strong>ditutup permanen (2)</strong>{" "}
+                        <strong>hari ini pukul 15.00 (3)</strong> jika
+                        verifikasi belum selesai.
+                    </p>
+
+                    <p>
+                        <strong>Ini perintah langsung dari saya. (1)</strong>{" "}
+                        Selesaikan sekarang dan{" "}
+                        <strong>jangan diskusikan dengan siapa pun. (4)</strong>
+                    </p>
+
+                    <FakeButton>Verifikasi sekarang</FakeButton>
+
+                    <p>
+                        Hendra Wirakusuma
+                        <br />
+                        Direktur Operasional
+                    </p>
+                </Mock>
+
+                <p className="font-medium text-slate-800">
+                    Penjelasan tanda bahaya pada email di atas:
                 </p>
 
-                <h2 className="text-lg font-semibold text-[#172B45]">3. Cara menghadapi tekanan</h2>
-                <p>
-                    Jangan langsung mengikuti instruksi hanya karena pesan menggunakan nada
-                    mengancam atau mengatasnamakan pihak penting. Berhenti sejenak, periksa
-                    sumber pesan, dan lakukan konfirmasi melalui saluran resmi.
-                </p>
+                <Bullets
+                    items={[
+                        <>
+                            <strong>Jabatan tinggi.</strong> Wewenang atasan
+                            dipakai agar Anda tidak berani bertanya.
+                        </>,
+                        <>
+                            <strong>Ancaman.</strong> &ldquo;Ditutup
+                            permanen&rdquo; menimbulkan rasa takut kehilangan
+                            akun.
+                        </>,
+                        <>
+                            <strong>Tenggat singkat.</strong> Waktu yang sempit
+                            membuat Anda tidak sempat memeriksa.
+                        </>,
+                        <>
+                            <strong>Rasa takut dan isolasi.</strong> Dilarang
+                            bertanya berarti Anda tidak bisa memastikan.
+                        </>,
+                    ]}
+                />
+            </Section>
 
-                <div className="rounded-lg border border-[#172B45]/20 p-4">
-                    <p className="font-semibold text-[#172B45]">Hal yang perlu diingat</p>
-                    <p className="mt-2 text-sm">Pesan yang mendesak dan mengatasnamakan otoritas bukan bukti bahwa pesan tersebut benar.</p>
-                </div>
-            </section>
+            <Section title="Tindakan Aman: Berhenti sebentar, lalu verifikasi">
+                <Bullets
+                    items={[
+                        "Jangan klik tombol dan jangan membalas pesan.",
+                        "Tanyakan pada diri sendiri: mengapa pesan ini memaksa saya bertindak cepat?",
+                        "Hubungi pengirim lewat kanal resmi yang sudah Anda kenal, bukan lewat kontak yang tertulis di dalam pesan.",
+                    ]}
+                />
+            </Section>
 
-            <UnitFooter seconds={seconds} isSaving={isSaving} errorMessage={errorMessage} onFinish={onFinish} />
+            <NextHint>Berikutnya: Unit 3 · Periksa tautan dan gembok</NextHint>
+
+            <UnitFooter unit={2} {...props} />
         </article>
-    );
-}
-
-function UnitFooter({ seconds, isSaving, errorMessage, onFinish }: Props) {
-    return (
-        <footer className="space-y-4 border-t border-slate-200 pt-6">
-            <p className="text-sm text-slate-500">Waktu membaca: {Math.floor(seconds / 60)} menit {seconds % 60} detik</p>
-            {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
-            <button onClick={onFinish} disabled={isSaving} className="w-full rounded-lg bg-[#172B45] px-5 py-3 font-medium text-white hover:bg-[#243F60] disabled:opacity-50">
-                {isSaving ? "Menyimpan..." : "Selesaikan Unit 2"}
-            </button>
-        </footer>
     );
 }

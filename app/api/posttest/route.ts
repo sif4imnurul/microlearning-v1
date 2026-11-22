@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
@@ -11,21 +10,9 @@ type AnswersData = {
     [key: string]: AnswerItem;
 };
 
-const answerScore: Record<string, number> = {
-    A: 1,
-    B: 2,
-    C: 3,
-    D: 4,
-};
+const validOptions = ["A", "B", "C", "D"];
 
-const requiredUnits = [
-    "U1",
-    "U2",
-    "U3",
-    "U4",
-    "U5",
-    "U6",
-];
+const requiredUnits = ["U1", "U2", "U3", "U4", "U5", "U6"];
 
 function isObject(value: unknown): value is AnswersData {
     return (
@@ -33,13 +20,6 @@ function isObject(value: unknown): value is AnswersData {
         value !== null &&
         !Array.isArray(value)
     );
-}
-
-function hasOwn(
-    object: object,
-    key: string
-): boolean {
-    return Object.prototype.hasOwnProperty.call(object, key);
 }
 
 export async function POST(request: Request) {
@@ -83,10 +63,7 @@ export async function POST(request: Request) {
                 .maybeSingle();
 
         if (respondentError) {
-            console.error(
-                "Cek respondent error:",
-                respondentError
-            );
+            console.error("Cek respondent error:", respondentError);
 
             return NextResponse.json(
                 {
@@ -116,10 +93,7 @@ export async function POST(request: Request) {
                 .maybeSingle();
 
         if (existingError) {
-            console.error(
-                "Cek Post-test error:",
-                existingError
-            );
+            console.error("Cek Post-test error:", existingError);
 
             return NextResponse.json(
                 {
@@ -150,10 +124,7 @@ export async function POST(request: Request) {
                 .maybeSingle();
 
         if (pretestError) {
-            console.error(
-                "Cek Pre-test error:",
-                pretestError
-            );
+            console.error("Cek Pre-test error:", pretestError);
 
             return NextResponse.json(
                 {
@@ -201,42 +172,41 @@ export async function POST(request: Request) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Selesaikan seluruh unit Microlearning terlebih dahulu.",
+                    message:
+                        "Selesaikan seluruh unit Microlearning terlebih dahulu.",
                 },
                 { status: 400 }
             );
         }
 
         // CEK SELURUH UNIT SUDAH SELESAI
-        const completedUnits = Array.isArray(
-            progress.completed_units
-        )
+        const completedUnits = Array.isArray(progress.completed_units)
             ? progress.completed_units
             : [];
 
-        const allUnitsCompleted = requiredUnits.every(
-            (unit) => completedUnits.includes(unit)
+        const allUnitsCompleted = requiredUnits.every((unit) =>
+            completedUnits.includes(unit)
         );
 
         if (!allUnitsCompleted) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Seluruh unit Microlearning belum diselesaikan.",
+                    message:
+                        "Seluruh unit Microlearning belum diselesaikan.",
                 },
                 { status: 400 }
             );
         }
 
-        // VALIDASI DAN MAPPING JAWABAN
-        const dataJawaban: Record<string, number> = {};
+        // VALIDASI DAN MAPPING JAWABAN (Q1 - Q12)
+        const dataJawaban: Record<string, string> = {};
         const dataConfidence: Record<string, number> = {};
-        const postAnswers: Record<string, string> = {};
 
         let totalConfidence = 0;
 
         for (let i = 1; i <= 12; i++) {
-            const questionId = `P${i}`;
+            const questionId = `Q${i}`;
             const answer = answers[questionId]?.answer;
             const confidence = answers[questionId]?.confidence;
 
@@ -244,7 +214,7 @@ export async function POST(request: Request) {
 
             if (
                 typeof answer !== "string" ||
-                !hasOwn(answerScore, answer) ||
+                !validOptions.includes(answer) ||
                 !Number.isInteger(confidenceNumber) ||
                 confidenceNumber < 1 ||
                 confidenceNumber > 5
@@ -258,9 +228,8 @@ export async function POST(request: Request) {
                 );
             }
 
-            dataJawaban[`q${i}`] = answerScore[answer];
+            dataJawaban[`q${i}`] = answer;
             dataConfidence[`Q${i}`] = confidenceNumber;
-            postAnswers[`Q${i}`] = answer;
 
             totalConfidence += confidenceNumber;
         }
@@ -273,10 +242,7 @@ export async function POST(request: Request) {
         // DATA YANG AKAN DISIMPAN
         const posttestData = {
             respondent_id: respondentId,
-
             ...dataJawaban,
-
-            post_answers: postAnswers,
             confidence_post: dataConfidence,
             confidence_post_avg: confidenceAverage,
         };
@@ -287,12 +253,8 @@ export async function POST(request: Request) {
             .insert(posttestData);
 
         if (insertError) {
-            console.error(
-                "Supabase Post-test error:",
-                insertError
-            );
+            console.error("Supabase Post-test error:", insertError);
 
-            // JIKA DUPLIKAT KARENA REQUEST BERSAMAAN
             if (insertError.code === "23505") {
                 const { data: duplicateData, error: duplicateError } =
                     await supabaseAdmin
@@ -316,13 +278,13 @@ export async function POST(request: Request) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Gagal menyimpan jawaban Post-test. Silakan coba kembali.",
+                    message:
+                        "Gagal menyimpan jawaban Post-test. Silakan coba kembali.",
                 },
                 { status: 500 }
             );
         }
 
-        // BERHASIL
         return NextResponse.json(
             {
                 success: true,
@@ -331,12 +293,8 @@ export async function POST(request: Request) {
             },
             { status: 200 }
         );
-
     } catch (error) {
-        console.error(
-            "Post-test API error:",
-            error
-        );
+        console.error("Post-test API error:", error);
 
         return NextResponse.json(
             {

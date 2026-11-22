@@ -1,80 +1,129 @@
+import {
+    Bullets,
+    Key,
+    Mock,
+    NextHint,
+    Note,
+    Section,
+    Table,
+    UnitFooter,
+    UnitHeader,
+    type UnitProps,
+} from "@/components/microlearning/UnitParts";
 
-type Props = {
-    seconds: number;
-    isSaving: boolean;
-    errorMessage: string;
-    onFinish: () => void;
-};
-
-export default function Unit4({ seconds, isSaving, errorMessage, onFinish }: Props) {
+export default function Unit4(props: UnitProps) {
     return (
-        <article className="space-y-6 text-slate-700">
-            <header>
-                <p className="text-sm font-medium text-slate-500">UNIT 4 DARI 6</p>
-                <h1 className="mt-2 text-2xl font-bold text-[#172B45]">
-                    Mengenali Lampiran dan QR Code Berbahaya
-                </h1>
-                <p className="mt-2">Kenali risiko file lampiran dan kode QR dari sumber yang tidak dikenal.</p>
-            </header>
+        <article className="space-y-6">
+            <UnitHeader
+                title="Unit 4: Waspadai Lampiran dan QR"
+                meta="Microlearning A03 · Unit 4 dari 6"
+            />
 
-            <section className="space-y-4 leading-7">
-                <h2 className="text-lg font-semibold text-[#172B45]">1. Waspadai lampiran mencurigakan</h2>
+            <Section title="Tujuan">
                 <p>
-                    Lampiran email atau pesan dapat digunakan untuk menyebarkan malware maupun
-                    mengarahkan korban ke halaman phishing. File yang tidak diharapkan perlu
-                    diperiksa sebelum dibuka.
+                    Setelah unit ini, Anda berhenti dan memverifikasi dulu
+                    sebelum membuka file atau memindai kode QR yang tidak Anda
+                    harapkan.
                 </p>
-                <p>
-                    Berhati-hatilah terhadap file yang meminta pengguna mengaktifkan macro,
-                    menjalankan program, atau memasang aplikasi tambahan.
-                </p>
+            </Section>
 
-                <h2 className="text-lg font-semibold text-[#172B45]">2. Perhatikan jenis file</h2>
+            <Section title="Konsep Utama">
+                <Key>
+                    File atau QR yang tidak diharapkan harus diverifikasi
+                    sebelum dibuka atau dipindai.
+                </Key>
+
                 <p>
-                    File program atau file dengan ekstensi ganda dapat digunakan untuk
-                    menyamarkan jenis file sebenarnya. Jangan menganggap lampiran aman hanya
-                    karena nama filenya terlihat meyakinkan.
+                    Pertanyaan pertamanya: apakah saya memang menunggu kiriman
+                    ini? Jika tidak, perlakukan dengan hati-hati. Dua hal yang
+                    sering dipakai:
                 </p>
 
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                    <p className="font-semibold text-[#172B45]">Contoh ilustrasi</p>
-                    <p className="mt-2 text-sm">
-                        Pesan yang tidak dikenal mengirimkan file bernama "Undangan.pdf.exe"
-                        dan meminta penerima segera membukanya.
-                    </p>
-                    <p className="mt-3 text-sm">Ekstensi .exe menunjukkan bahwa file tersebut merupakan program yang dapat dijalankan.</p>
+                <Table
+                    head={["Jenis", "Risikonya"]}
+                    rows={[
+                        [
+                            "File lampiran",
+                            "Dapat berisi program yang merugikan saat dibuka",
+                        ],
+                        [
+                            "Kode QR",
+                            "Alamat tujuan tersembunyi sampai dipindai",
+                        ],
+                    ]}
+                />
+            </Section>
+
+            <Section title="Contoh">
+                <Note>
+                    Contoh fiktif untuk latihan. Nama, perusahaan, dan alamat
+                    hanya rekaan.
+                </Note>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <Mock>
+                        <p className="text-xs font-semibold tracking-wide text-slate-500">
+                            EMAIL
+                        </p>
+                        <p>
+                            <strong>Subjek:</strong> Tagihan bulan ini
+                        </p>
+                        <p>
+                            <strong>Lampiran:</strong>{" "}
+                            <span className="font-mono text-xs">
+                                Tagihan-Listrik.pdf.exe
+                            </span>{" "}
+                            <strong>(1)</strong>
+                        </p>
+                    </Mock>
+
+                    <Mock>
+                        <p className="text-xs font-semibold tracking-wide text-slate-500">
+                            CHAT DARI NOMOR TIDAK DIKENAL
+                        </p>
+                        <p>&ldquo;Ini foto acara kemarin, scan ya.&rdquo;</p>
+                        <div className="flex items-center gap-2">
+                            <div className="flex h-20 w-20 items-center justify-center rounded-md border-2 border-dashed border-slate-400 text-xs text-slate-500">
+                                gambar QR
+                            </div>
+                            <strong>(2)</strong>
+                        </div>
+                    </Mock>
                 </div>
 
-                <h2 className="text-lg font-semibold text-[#172B45]">3. Waspadai QR code</h2>
-                <p>
-                    QR code dapat menyembunyikan alamat situs tujuan. Pelaku dapat
-                    memanfaatkannya untuk mengarahkan pengguna ke halaman login palsu atau
-                    situs berbahaya.
-                </p>
-                <p>
-                    Sebelum memasukkan informasi pada halaman yang dibuka melalui QR code,
-                    periksa alamat situs dan pastikan sumber QR code dapat dipercaya.
+                <p className="font-medium text-slate-800">
+                    Penjelasan tanda bahaya pada contoh di atas:
                 </p>
 
-                <div className="rounded-lg border border-[#172B45]/20 p-4">
-                    <p className="font-semibold text-[#172B45]">Hal yang perlu diingat</p>
-                    <p className="mt-2 text-sm">Jangan membuka lampiran atau memindai QR code sembarangan. Periksa sumber dan tujuan terlebih dahulu.</p>
-                </div>
-            </section>
+                <Bullets
+                    items={[
+                        <>
+                            <strong>Lampiran tidak ditunggu.</strong> Anda tidak
+                            sedang menunggu tagihan, dan nama serta ekstensi
+                            filenya janggal.
+                        </>,
+                        <>
+                            <strong>QR dari pengirim tak dikenal.</strong> Tidak
+                            ada keterangan yang jelas tentang ke mana QR itu
+                            mengarah.
+                        </>,
+                    ]}
+                />
+            </Section>
 
-            <UnitFooter seconds={seconds} isSaving={isSaving} errorMessage={errorMessage} onFinish={onFinish} />
+            <Section title="Tindakan Aman: Belum yakin? Jangan buka, jangan pindai">
+                <Bullets
+                    items={[
+                        "Tanyakan pada diri sendiri: apakah saya menunggu kiriman ini?",
+                        "Konfirmasi lewat kontak resmi pengirim atau pemilik tempat yang Anda kenal, bukan lewat kontak di dalam pesan.",
+                        "Buka atau pindai hanya setelah Anda yakin asal dan tujuannya.",
+                    ]}
+                />
+            </Section>
+
+            <NextHint>Berikutnya: Unit 5 · Kode rahasia dan MFA</NextHint>
+
+            <UnitFooter unit={4} {...props} />
         </article>
-    );
-}
-
-function UnitFooter({ seconds, isSaving, errorMessage, onFinish }: Props) {
-    return (
-        <footer className="space-y-4 border-t border-slate-200 pt-6">
-            <p className="text-sm text-slate-500">Waktu membaca: {Math.floor(seconds / 60)} menit {seconds % 60} detik</p>
-            {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
-            <button onClick={onFinish} disabled={isSaving} className="w-full rounded-lg bg-[#172B45] px-5 py-3 font-medium text-white hover:bg-[#243F60] disabled:opacity-50">
-                {isSaving ? "Menyimpan..." : "Selesaikan Unit 4"}
-            </button>
-        </footer>
     );
 }

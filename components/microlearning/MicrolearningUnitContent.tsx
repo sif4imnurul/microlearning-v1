@@ -120,6 +120,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                 }
 
                 if (isMounted) {
+                    setErrorMessage("");
                     setStartedAt(start);
                     setSeconds(getElapsedSeconds(start));
                 }
@@ -140,8 +141,18 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
         loadProgress();
 
+        function handlePageShow(event: PageTransitionEvent) {
+            if (event.persisted) {
+                setIsLoading(true);
+                loadProgress();
+            }
+        }
+
+        window.addEventListener("pageshow", handlePageShow);
+
         return () => {
             isMounted = false;
+            window.removeEventListener("pageshow", handlePageShow);
         };
     }, [unitNumber, router, startKey]);
 
@@ -244,29 +255,37 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
     if (isLoading) {
         return (
-            <main className="min-h-screen bg-white px-4 py-12">
-                <div className="mx-auto w-full max-w-6xl">
-                    <p className="text-sm text-slate-500">
-                        Memuat materi microlearning...
-                    </p>
-                </div>
+            <main className="flex min-h-screen items-center justify-center bg-white">
+                <p className="text-sm text-slate-500">
+                    Memuat materi microlearning...
+                </p>
             </main>
         );
     }
 
-    if (errorMessage && !respondentId) {
+    if (errorMessage && startedAt === null) {
         return (
-            <main className="min-h-screen bg-white px-4 py-12">
-                <div className="mx-auto w-full max-w-6xl space-y-4">
+            <main className="min-h-screen w-full bg-white px-5 py-8 sm:px-10 lg:px-16">
+                <div className="w-full space-y-4">
                     <p className="text-sm text-red-600">{errorMessage}</p>
 
-                    <button
-                        type="button"
-                        onClick={() => router.replace("/pretest")}
-                        className="rounded-lg bg-[#172B45] px-5 py-3 text-white hover:bg-[#243F60]"
-                    >
-                        Kembali ke Pre-test
-                    </button>
+                    <div className="flex flex-wrap gap-3">
+                        <button
+                            type="button"
+                            onClick={() => window.location.reload()}
+                            className="cursor-pointer rounded-lg bg-[#172B45] px-5 py-3 text-sm font-semibold text-white hover:bg-[#243F60]"
+                        >
+                            Muat Ulang Halaman
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => router.replace("/pretest")}
+                            className="cursor-pointer rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                        >
+                            Kembali ke Pre-test
+                        </button>
+                    </div>
                 </div>
             </main>
         );
@@ -285,8 +304,8 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
     return (
         <>
-            <main className="min-h-screen w-full bg-white px-4 py-10 sm:px-6 lg:px-8">
-                <div className="mx-auto w-full max-w-6xl">
+            <main className="min-h-screen w-full bg-white px-5 py-8 sm:px-10 lg:px-16">
+                <div className="w-full">
                     <div className="mb-8">
                         <div className="mb-3 flex items-center justify-between">
                             <p className="text-sm font-medium text-slate-500">

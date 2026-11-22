@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
@@ -49,15 +48,10 @@ export async function POST(request: Request) {
 
         const pretestAnswers = answers as AnswersData;
 
-        const dataJawaban: Record<string, number> = {};
+        const dataJawaban: Record<string, string> = {};
         const dataConfidence: Record<string, number> = {};
 
-        const answerScore: Record<string, number> = {
-            A: 1,
-            B: 2,
-            C: 3,
-            D: 4,
-        };
+        const validOptions = ["A", "B", "C", "D"];
 
         let totalConfidence = 0;
 
@@ -73,10 +67,7 @@ export async function POST(request: Request) {
 
             if (
                 typeof answer !== "string" ||
-                !Object.prototype.hasOwnProperty.call(
-                    answerScore,
-                    answer
-                ) ||
+                !validOptions.includes(answer) ||
                 !Number.isInteger(confidenceNumber) ||
                 confidenceNumber < 1 ||
                 confidenceNumber > 5
@@ -90,7 +81,7 @@ export async function POST(request: Request) {
                 );
             }
 
-            dataJawaban[`p${i}`] = answerScore[answer];
+            dataJawaban[`p${i}`] = answer;
 
             dataConfidence[questionId] = confidenceNumber;
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PRETEST_QUESTIONS } from "@/data/instruments/pretest";
+import { POSTTEST_QUESTIONS } from "@/data/instruments/posttest";
 import { useStageGuard } from "@/lib/useStageGuard";
 
 type AnswerData = {
@@ -23,7 +23,7 @@ export default function PosttestPage() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showAlreadyExists, setShowAlreadyExists] = useState(false);
 
-    const totalQuestions = PRETEST_QUESTIONS.length;
+    const totalQuestions = POSTTEST_QUESTIONS.length;
 
     const optionClass =
         "flex cursor-pointer items-start gap-3 rounded-md border px-4 py-3 text-sm leading-6 transition-colors";
@@ -101,13 +101,13 @@ export default function PosttestPage() {
         setPesanError("");
     }
 
-    const isComplete = PRETEST_QUESTIONS.every(
+    const isComplete = POSTTEST_QUESTIONS.every(
         (question) =>
             answers[question.id]?.answer &&
             answers[question.id]?.confidence
     );
 
-    const answeredCount = PRETEST_QUESTIONS.filter(
+    const answeredCount = POSTTEST_QUESTIONS.filter(
         (question) =>
             answers[question.id]?.answer &&
             answers[question.id]?.confidence
@@ -126,7 +126,7 @@ export default function PosttestPage() {
                 "Masih ada pertanyaan yang belum dijawab. Periksa kembali seluruh pertanyaan."
             );
 
-            const firstIncomplete = PRETEST_QUESTIONS.find(
+            const firstIncomplete = POSTTEST_QUESTIONS.find(
                 (question) =>
                     !answers[question.id]?.answer ||
                     !answers[question.id]?.confidence
@@ -228,10 +228,10 @@ export default function PosttestPage() {
                     </h1>
 
                     <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-                        Selamat! Kamu telah menyelesaikan seluruh materi
+                        Selamat! Anda telah menyelesaikan seluruh materi
                         Microlearning. Sekarang, silakan jawab pertanyaan
-                        berikut berdasarkan pemahamanmu setelah membaca
-                        materi.
+                        berikut berdasarkan pemahaman Anda setelah menyelesaikan
+                        intervensi.
                     </p>
                 </header>
 
@@ -255,8 +255,8 @@ export default function PosttestPage() {
                             berarti sangat yakin.
                         </li>
                         <li>
-                            Kerjakan secara mandiri berdasarkan pemahaman
-                            setelah mengikuti Microlearning.
+                            Jangan kembali melihat materi intervensi saat
+                            mengerjakan post-test.
                         </li>
                     </ul>
                 </section>
@@ -289,7 +289,7 @@ export default function PosttestPage() {
 
                 <form onSubmit={handleSubmit}>
                     <div className="space-y-6">
-                        {PRETEST_QUESTIONS.map((question, index) => {
+                        {POSTTEST_QUESTIONS.map((question, index) => {
                             const currentAnswer = answers[question.id];
 
                             const isAnswered = Boolean(
@@ -351,7 +351,9 @@ export default function PosttestPage() {
 
                                                         return (
                                                             <label
-                                                                key={option.label}
+                                                                key={
+                                                                    option.label
+                                                                }
                                                                 className={`${optionClass} ${isSelected
                                                                     ? "border-[#172B45] bg-slate-50 text-[#172B45]"
                                                                     : "border-slate-200 text-slate-600 hover:border-slate-400 hover:bg-slate-50"
@@ -360,23 +362,34 @@ export default function PosttestPage() {
                                                                 <input
                                                                     type="radio"
                                                                     name={`${question.id}-answer`}
-                                                                    value={option.label}
-                                                                    checked={isSelected}
+                                                                    value={
+                                                                        option.label
+                                                                    }
+                                                                    checked={
+                                                                        isSelected
+                                                                    }
                                                                     onChange={() =>
                                                                         handleAnswer(
                                                                             question.id,
                                                                             option.label
                                                                         )
                                                                     }
-                                                                    className={radioClass}
+                                                                    className={
+                                                                        radioClass
+                                                                    }
                                                                 />
 
                                                                 <span>
                                                                     <strong className="mr-1 font-semibold text-[#172B45]">
-                                                                        {option.label}.
+                                                                        {
+                                                                            option.label
+                                                                        }
+                                                                        .
                                                                     </strong>
 
-                                                                    {option.text}
+                                                                    {
+                                                                        option.text
+                                                                    }
                                                                 </span>
                                                             </label>
                                                         );
@@ -391,48 +404,58 @@ export default function PosttestPage() {
                                             </h3>
 
                                             <p className="mt-1 text-sm leading-6 text-slate-500">
-                                                Seberapa yakin kamu terhadap
+                                                Seberapa yakin Anda terhadap
                                                 jawaban yang telah dipilih?
                                             </p>
 
                                             <div className="mt-4 grid max-w-xl grid-cols-5 gap-3">
-                                                {[1, 2, 3, 4, 5].map((value) => {
-                                                    const isSelected =
-                                                        currentAnswer?.confidence ===
-                                                        String(value);
+                                                {[1, 2, 3, 4, 5].map(
+                                                    (value) => {
+                                                        const isSelected =
+                                                            currentAnswer?.confidence ===
+                                                            String(value);
 
-                                                    return (
-                                                        <label
-                                                            key={value}
-                                                            className={`flex cursor-pointer flex-col items-center justify-center rounded-md border py-3 transition-colors ${isSelected
-                                                                ? "border-[#172B45] bg-[#172B45] text-white"
-                                                                : "border-slate-200 text-slate-600 hover:border-slate-400 hover:bg-slate-50"
-                                                                }`}
-                                                        >
-                                                            <input
-                                                                type="radio"
-                                                                name={`${question.id}-confidence`}
-                                                                value={value}
-                                                                checked={isSelected}
-                                                                onChange={() =>
-                                                                    handleConfidence(
-                                                                        question.id,
-                                                                        String(value)
-                                                                    )
-                                                                }
-                                                                className="sr-only"
-                                                            />
+                                                        return (
+                                                            <label
+                                                                key={value}
+                                                                className={`flex cursor-pointer flex-col items-center justify-center rounded-md border py-3 transition-colors ${isSelected
+                                                                    ? "border-[#172B45] bg-[#172B45] text-white"
+                                                                    : "border-slate-200 text-slate-600 hover:border-slate-400 hover:bg-slate-50"
+                                                                    }`}
+                                                            >
+                                                                <input
+                                                                    type="radio"
+                                                                    name={`${question.id}-confidence`}
+                                                                    value={
+                                                                        value
+                                                                    }
+                                                                    checked={
+                                                                        isSelected
+                                                                    }
+                                                                    onChange={() =>
+                                                                        handleConfidence(
+                                                                            question.id,
+                                                                            String(
+                                                                                value
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                    className="sr-only"
+                                                                />
 
-                                                            <span className="text-base font-semibold">
-                                                                {value}
-                                                            </span>
-                                                        </label>
-                                                    );
-                                                })}
+                                                                <span className="text-base font-semibold">
+                                                                    {value}
+                                                                </span>
+                                                            </label>
+                                                        );
+                                                    }
+                                                )}
                                             </div>
 
                                             <div className="mt-2 flex max-w-xl justify-between text-xs text-slate-400">
-                                                <span>1 - Sangat tidak yakin</span>
+                                                <span>
+                                                    1 - Sangat tidak yakin
+                                                </span>
                                                 <span>5 - Sangat yakin</span>
                                             </div>
                                         </div>
@@ -560,7 +583,7 @@ export default function PosttestPage() {
                         </h2>
 
                         <p className="mt-3 text-sm leading-7 text-slate-600">
-                            Jawaban Post-test kamu berhasil disimpan. Terima
+                            Jawaban Post-test Anda berhasil disimpan. Terima
                             kasih telah mengikuti seluruh rangkaian penelitian
                             ini.
                         </p>
@@ -571,8 +594,8 @@ export default function PosttestPage() {
                             </h3>
 
                             <p className="mt-2 text-sm leading-6 text-slate-600">
-                                Partisipasimu sangat berarti untuk penelitian
-                                ini. Terima kasih atas waktu dan kerja samamu.
+                                Partisipasi Anda sangat berarti untuk penelitian
+                                ini. Terima kasih atas waktu dan kerja samanya.
                             </p>
                         </div>
 
@@ -620,9 +643,9 @@ export default function PosttestPage() {
                         </h2>
 
                         <p className="mt-3 text-sm leading-7 text-slate-600">
-                            Kamu sudah pernah mengisi dan mengirimkan
-                            Post-test. Jawaban sebelumnya telah tersimpan
-                            sehingga tidak perlu mengirim ulang.
+                            Anda sudah pernah mengisi dan mengirimkan Post-test.
+                            Jawaban sebelumnya telah tersimpan sehingga tidak
+                            perlu mengirim ulang.
                         </p>
 
                         <button

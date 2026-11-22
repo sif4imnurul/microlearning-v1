@@ -1,10 +1,5 @@
-
-import WelcomeCard from "@/components/WelcomeCard";
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
-      <WelcomeCard />
-    </main>
-  );
+  redirect("/consent");
 }

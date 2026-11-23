@@ -54,6 +54,10 @@ export default function Unit5(props: UnitProps) {
                             "Tolak",
                         ],
                         [
+                            "Prompt MFA muncul setelah Anda sendiri memulai login",
+                            "Wajar. Periksa detailnya, lalu boleh disetujui",
+                        ],
+                        [
                             "MFA pada akun penting",
                             "Tetap dianjurkan",
                         ],

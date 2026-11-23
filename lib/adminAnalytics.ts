@@ -1,36 +1,36 @@
 export type OptionLetter = "A" | "B" | "C" | "D";
 
 // ============================================================================
-// KUNCI JAWABAN INSTRUMEN (Sesuaikan dengan kunci soal P1-P12 dan Q1-Q12)
+// KUNCI JAWABAN INSTRUMEN
 // ============================================================================
 export const PRETEST_ANSWER_KEY: Record<string, OptionLetter> = {
     P1: "B",
-    P2: "C",
-    P3: "A",
-    P4: "D",
+    P2: "B",
+    P3: "C",
+    P4: "C",
     P5: "B",
-    P6: "C",
-    P7: "A",
+    P6: "B",
+    P7: "B",
     P8: "B",
-    P9: "D",
+    P9: "A",
     P10: "C",
-    P11: "A",
-    P12: "B",
+    P11: "B",
+    P12: "A",
 };
 
 export const POSTTEST_ANSWER_KEY: Record<string, OptionLetter> = {
     Q1: "B",
-    Q2: "C",
-    Q3: "A",
-    Q4: "D",
+    Q2: "B",
+    Q3: "B",
+    Q4: "B",
     Q5: "B",
-    Q6: "C",
-    Q7: "A",
+    Q6: "A",
+    Q7: "B",
     Q8: "B",
-    Q9: "D",
-    Q10: "C",
-    Q11: "A",
-    Q12: "B",
+    Q9: "B",
+    Q10: "B",
+    Q11: "B",
+    Q12: "A",
 };
 
 // Batas minimal total durasi baca microlearning (detik) agar lolos Clean Data

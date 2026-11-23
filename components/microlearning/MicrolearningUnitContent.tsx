@@ -255,8 +255,8 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
     if (isLoading) {
         return (
-            <main className="flex min-h-screen items-center justify-center bg-white">
-                <p className="text-sm text-slate-500">
+            <main className="flex min-h-screen items-center justify-center bg-[#F6F4EE] px-4">
+                <p className="text-sm text-[#4E5A69]">
                     Memuat materi microlearning...
                 </p>
             </main>
@@ -265,15 +265,20 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
     if (errorMessage && startedAt === null) {
         return (
-            <main className="min-h-screen w-full bg-white px-5 py-8 sm:px-10 lg:px-16">
-                <div className="w-full space-y-4">
-                    <p className="text-sm text-red-600">{errorMessage}</p>
+            <main className="min-h-screen w-full bg-[#F6F4EE] px-4 py-8 sm:px-8 sm:py-12">
+                <div className="mx-auto w-full max-w-[780px] rounded-2xl border border-[#DDD9CF] bg-white p-6 space-y-4">
+                    <p
+                        role="alert"
+                        className="rounded-lg border border-[#E8B7AC] bg-[#FDF1EE] px-4 py-3 text-sm text-[#A62D14]"
+                    >
+                        {errorMessage}
+                    </p>
 
                     <div className="flex flex-wrap gap-3">
                         <button
                             type="button"
                             onClick={() => window.location.reload()}
-                            className="cursor-pointer rounded-lg bg-[#172B45] px-5 py-3 text-sm font-semibold text-white hover:bg-[#243F60]"
+                            className="min-h-11 rounded-lg bg-[#172B45] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#243B59] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
                         >
                             Muat Ulang Halaman
                         </button>
@@ -281,7 +286,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                         <button
                             type="button"
                             onClick={() => router.replace("/pretest")}
-                            className="cursor-pointer rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                            className="min-h-11 rounded-lg border border-[#C6C1B5] bg-[#FAF9F5] px-5 py-2.5 text-sm font-semibold text-[#1C2430] transition-colors hover:border-[#172B45] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
                         >
                             Kembali ke Pre-test
                         </button>
@@ -304,22 +309,20 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
     return (
         <>
-            <main className="min-h-screen w-full bg-white px-5 py-8 sm:px-10 lg:px-16">
-                <div className="w-full">
-                    <div className="mb-8">
-                        <div className="mb-3 flex items-center justify-between">
-                            <p className="text-sm font-medium text-slate-500">
-                                MICROLEARNING
-                            </p>
+            <main className="min-h-screen w-full bg-[#F6F4EE] px-4 py-6 sm:px-8 sm:py-9">
+                <div className="mx-auto w-full max-w-[780px]">
+                    <div className="mb-5">
+                        <div className="mb-2 flex items-center justify-between text-xs font-medium text-[#4E5A69]">
+                            <span>Microlearning A03</span>
 
-                            <p className="text-sm text-slate-500">
+                            <span className="tabular-nums">
                                 Unit {unitNumber} dari 6
-                            </p>
+                            </span>
                         </div>
 
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E3DFD5]">
                             <div
-                                className="h-full rounded-full bg-[#172B45] transition-all"
+                                className="h-full rounded-full bg-[#172B45] transition-all duration-300"
                                 style={{
                                     width: `${(unitNumber / 6) * 100}%`,
                                 }}
@@ -327,7 +330,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                         </div>
                     </div>
 
-                    <section className="w-full rounded-xl border border-slate-200 bg-white p-5 sm:p-8 lg:p-10">
+                    <section className="w-full">
                         <UnitComponent {...unitProps} />
                     </section>
                 </div>
@@ -335,7 +338,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
             {showConfirmModal && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-[#101C2E]/55 px-4 py-6"
                     onClick={closeModal}
                 >
                     <div
@@ -343,14 +346,14 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                         aria-modal="true"
                         aria-labelledby="unit-confirm-title"
                         onClick={(event) => event.stopPropagation()}
-                        className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl sm:p-8"
+                        className="animate-popover-in relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl sm:p-8"
                     >
                         <button
                             type="button"
                             onClick={closeModal}
                             disabled={isSaving}
-                            aria-label="Tutup"
-                            className="absolute right-4 top-4 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                            aria-label="Tutup dialog"
+                            className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-lg text-[#4E5A69] transition-colors hover:bg-[#F6F4EE] hover:text-[#1C2430] focus-visible:outline-2 focus-visible:outline-[#172B45] disabled:opacity-40"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -359,6 +362,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                                 stroke="currentColor"
                                 strokeWidth="2"
                                 className="h-5 w-5"
+                                aria-hidden="true"
                             >
                                 <path
                                     strokeLinecap="round"
@@ -371,25 +375,28 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                         <div className="mb-5 text-center">
                             <h2
                                 id="unit-confirm-title"
-                                className="px-6 text-xl font-bold text-[#172B45]"
+                                className="px-8 text-xl font-semibold text-[#172B45]"
                             >
-                                Unit Berhasil Diselesaikan!
+                                Unit Berhasil Diselesaikan
                             </h2>
 
-                            <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                                Kamu telah menyelesaikan materi Unit{" "}
+                            <p className="mt-3 text-sm leading-relaxed text-[#4E5A69]">
+                                Anda telah menyelesaikan materi Unit{" "}
                                 {unitNumber}. Silakan lanjutkan ke tahap
                                 berikutnya.
                             </p>
 
-                            <p className="mt-3 text-sm font-medium leading-relaxed text-slate-500">
-                                Perhatian: Setelah melanjutkan, kamu tidak
-                                dapat kembali ke unit sebelumnya.
+                            <p className="mt-2.5 text-xs font-medium leading-relaxed text-[#4E5A69]">
+                                Perhatian: setelah melanjutkan, Anda tidak dapat
+                                kembali ke unit sebelumnya.
                             </p>
                         </div>
 
                         {errorMessage && (
-                            <p className="mb-4 text-center text-sm text-red-600">
+                            <p
+                                role="alert"
+                                className="mb-4 rounded-lg border border-[#E8B7AC] bg-[#FDF1EE] px-3 py-2 text-center text-xs text-[#A62D14]"
+                            >
                                 {errorMessage}
                             </p>
                         )}
@@ -398,7 +405,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                             type="button"
                             onClick={handleContinue}
                             disabled={isSaving}
-                            className="w-full cursor-pointer rounded-xl bg-[#172B45] px-5 py-3 font-semibold text-white transition hover:bg-[#243F60] disabled:cursor-not-allowed disabled:opacity-50"
+                            className="min-h-12 w-full rounded-lg bg-[#172B45] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#243B59] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45] disabled:opacity-50"
                         >
                             {isSaving
                                 ? "Menyimpan..."

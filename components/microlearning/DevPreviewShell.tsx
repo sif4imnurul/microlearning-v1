@@ -9,12 +9,12 @@ import Unit5 from "@/components/microlearning/Unit5";
 import Unit6 from "@/components/microlearning/Unit6";
 
 const UNITS = [
-    { number: 1, label: "U1", badge: "Baru", Component: Unit1 },
-    { number: 2, label: "U2", badge: null, Component: Unit2 },
-    { number: 3, label: "U3", badge: null, Component: Unit3 },
-    { number: 4, label: "U4", badge: null, Component: Unit4 },
-    { number: 5, label: "U5", badge: null, Component: Unit5 },
-    { number: 6, label: "U6", badge: null, Component: Unit6 },
+    { number: 1, label: "U1", Component: Unit1 },
+    { number: 2, label: "U2", Component: Unit2 },
+    { number: 3, label: "U3", Component: Unit3 },
+    { number: 4, label: "U4", Component: Unit4 },
+    { number: 5, label: "U5", Component: Unit5 },
+    { number: 6, label: "U6", Component: Unit6 },
 ] as const;
 
 export default function DevPreviewShell() {

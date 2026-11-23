@@ -37,19 +37,46 @@ export default function Unit4({
     onFinish,
 }: UnitProps) {
     const [activeTab, setActiveTab] = useState<ScenarioTab>("email");
+    const [visitedEmail, setVisitedEmail] = useState(true);
+    const [visitedWhatsapp, setVisitedWhatsapp] = useState(false);
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [attachmentChecked, setAttachmentChecked] = useState(false);
     const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
     const [decision, setDecision] = useState<Decision>(null);
     const [emailNotice, setEmailNotice] = useState<ActionNotice | null>(null);
     const [waNotice, setWaNotice] = useState<ActionNotice | null>(null);
+    const simulatorSectionRef = useRef<HTMLElement | null>(null);
     const revealRef = useRef<HTMLDivElement | null>(null);
 
-    const isRevealed = decision !== null;
+    const bothCasesViewed = visitedEmail && visitedWhatsapp;
+    const isRevealed = bothCasesViewed && decision !== null;
     const formattedMinutes = String(Math.floor(seconds / 60)).padStart(2, "0");
     const formattedSeconds = String(seconds % 60).padStart(2, "0");
 
+    function selectTab(nextTab: ScenarioTab, scrollToTop = false) {
+        setActiveTab(nextTab);
+        if (nextTab === "email") {
+            setVisitedEmail(true);
+        } else {
+            setVisitedWhatsapp(true);
+        }
+
+        if (scrollToTop) {
+            window.requestAnimationFrame(() => {
+                const prefersReducedMotion = window.matchMedia(
+                    "(prefers-reduced-motion: reduce)"
+                ).matches;
+                simulatorSectionRef.current?.scrollIntoView({
+                    behavior: prefersReducedMotion ? "auto" : "smooth",
+                    block: "nearest",
+                });
+            });
+        }
+    }
+
     function handleDecision(choice: Exclude<Decision, null>) {
+        if (!bothCasesViewed) return;
+
         setDecision(choice);
         setAttachmentChecked(true);
         setQrPreviewOpen(true);
@@ -148,10 +175,11 @@ export default function Unit4({
 
             {/* Primary Focal Point: Two Realistic Scenarios (Email Attachment + WhatsApp QR) */}
             <section
+                ref={simulatorSectionRef}
                 className="mt-6 space-y-3"
                 aria-label="Simulasi lampiran email dan kode QR WhatsApp"
             >
-                {/* Scenario Switcher */}
+                {/* Scenario Switcher with Visit Status */}
                 <div
                     role="tablist"
                     aria-label="Pilih simulasi kasus"
@@ -161,28 +189,48 @@ export default function Unit4({
                         type="button"
                         role="tab"
                         aria-selected={activeTab === "email"}
-                        onClick={() => setActiveTab("email")}
-                        className={`min-h-11 rounded-lg px-3 py-2 text-left text-xs font-semibold transition-all focus-visible:outline-2 focus-visible:outline-[#172B45] sm:px-4 sm:text-sm ${
+                        onClick={() => selectTab("email")}
+                        className={`flex min-h-11 items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold transition-all focus-visible:outline-2 focus-visible:outline-[#172B45] sm:px-4 sm:text-sm ${
                             activeTab === "email"
                                 ? "bg-white text-[#172B45] shadow-xs"
                                 : "text-[#4E5A69] hover:text-[#1C2430]"
                         }`}
                     >
-                        Kasus 1: Email Lampiran
+                        <span>Kasus 1: Email Lampiran</span>
+                        {visitedEmail && (
+                            <span
+                                className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#ECF7F1] text-[11px] font-bold text-[#145C3A]"
+                                aria-label="Sudah dilihat"
+                            >
+                                ✓
+                            </span>
+                        )}
                     </button>
 
                     <button
                         type="button"
                         role="tab"
                         aria-selected={activeTab === "whatsapp"}
-                        onClick={() => setActiveTab("whatsapp")}
-                        className={`min-h-11 rounded-lg px-3 py-2 text-left text-xs font-semibold transition-all focus-visible:outline-2 focus-visible:outline-[#172B45] sm:px-4 sm:text-sm ${
+                        onClick={() => selectTab("whatsapp")}
+                        className={`flex min-h-11 items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold transition-all focus-visible:outline-2 focus-visible:outline-[#172B45] sm:px-4 sm:text-sm ${
                             activeTab === "whatsapp"
                                 ? "bg-white text-[#172B45] shadow-xs"
                                 : "text-[#4E5A69] hover:text-[#1C2430]"
                         }`}
                     >
-                        Kasus 2: WhatsApp QR
+                        <span>Kasus 2: WhatsApp QR</span>
+                        {visitedWhatsapp ? (
+                            <span
+                                className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#ECF7F1] text-[11px] font-bold text-[#145C3A]"
+                                aria-label="Sudah dilihat"
+                            >
+                                ✓
+                            </span>
+                        ) : (
+                            <span className="shrink-0 rounded-md bg-[#FEF6E7] px-2 py-0.5 text-[11px] font-semibold text-[#8A4B08]">
+                                Belum dilihat
+                            </span>
+                        )}
                     </button>
                 </div>
 
@@ -367,16 +415,50 @@ export default function Unit4({
                 </p>
             </section>
 
-            {/* Equal-Weight Decision Prompt */}
-            {!isRevealed && (
+            {/* Step 1 -> Step 2 Guided Progression Card (Prevents skipping Kasus 2 WhatsApp QR) */}
+            {!bothCasesViewed && (
                 <section className="mt-6 rounded-xl border border-[#DDD9CF] bg-white px-5 py-5 sm:px-6">
-                    <p className="text-base font-semibold leading-snug text-[#172B45] text-balance">
-                        Anda tidak sedang menunggu kiriman tagihan maupun foto
-                        acara dari pengirim tersebut. Apa langkah paling aman?
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p className="text-xs font-semibold text-[#8A4B08]">
+                                Langkah 1 dari 2 · Lanjut ke simulasi kedua
+                            </p>
+                            <p className="mt-1 text-base font-semibold leading-snug text-[#172B45] text-balance">
+                                Setelah memeriksa lampiran email di atas, buka
+                                Kasus 2 untuk melihat simulasi kode QR di
+                                WhatsApp.
+                            </p>
+                            <p className="mt-1 text-xs text-[#4E5A69]">
+                                Pertanyaan simulasi akan terbuka setelah Anda
+                                melihat kedua kasus.
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => selectTab("whatsapp", true)}
+                            className="min-h-12 shrink-0 rounded-lg bg-[#172B45] px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-[#243B59] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
+                        >
+                            Lanjut ke Kasus 2: WhatsApp QR
+                        </button>
+                    </div>
+                </section>
+            )}
+
+            {/* Equal-Weight Decision Prompt (Unlocked after viewing both Email & WhatsApp QR cases) */}
+            {bothCasesViewed && !isRevealed && (
+                <section className="animate-reveal-in mt-6 rounded-xl border border-[#DDD9CF] bg-white px-5 py-5 sm:px-6">
+                    <p className="text-xs font-semibold text-[#145C3A]">
+                        Langkah 2 dari 2 · Kedua kasus sudah dilihat
+                    </p>
+                    <p className="mt-1 text-base font-semibold leading-snug text-[#172B45] text-balance">
+                        Anda tidak sedang menunggu kiriman tagihan pada Kasus 1
+                        maupun foto acara dari nomor asing pada Kasus 2. Apa
+                        langkah paling aman?
                     </p>
                     <p className="mt-1 text-xs text-[#4E5A69]">
-                        Anda dapat melihat kedua tab simulasi di atas dan
-                        memeriksa lampiran serta pratinjau QR terlebih dahulu.
+                        Anda masih dapat berpindah antara tab Kasus 1 dan Kasus
+                        2 di atas sebelum memilih jawaban.
                     </p>
 
                     <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
@@ -405,7 +487,7 @@ export default function Unit4({
                     ref={revealRef}
                     className="animate-reveal-in mt-7 space-y-7"
                 >
-                    {/* Section A: Unified 2-Case Red Flag Strip */}
+                    {/* Section A: Unified 2-Case Red Flag Strip (Clickable to switch between Kasus 1 & Kasus 2) */}
                     <section className="rounded-xl border border-[#DDD9CF] bg-white p-5 sm:p-6">
                         <div className="flex items-start gap-2.5">
                             <span
@@ -431,16 +513,27 @@ export default function Unit4({
                                         : "Membuka file atau memindai QR lebih dulu justru memberi celah bagi program berbahaya atau tautan jebakan."}
                                 </p>
                                 <p className="mt-1 text-xs text-[#4E5A69]">
-                                    Dua tanda bahaya dari kedua kasus di atas:
+                                    Klik salah satu blok di bawah untuk
+                                    menampilkan kembali simulasi terkait di
+                                    atas:
                                 </p>
                             </div>
                         </div>
 
                         <div className="mt-4 overflow-hidden rounded-xl border border-[#DDD9CF]">
                             <div className="grid grid-cols-1 divide-y divide-[#DDD9CF] sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-                                <div className="bg-[#FDF1EE] px-4 py-3.5">
+                                <button
+                                    type="button"
+                                    onClick={() => selectTab("email")}
+                                    aria-pressed={activeTab === "email"}
+                                    className={`bg-[#FDF1EE] px-4 py-3.5 text-left transition-opacity focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#172B45] ${
+                                        activeTab === "email"
+                                            ? "opacity-100"
+                                            : "opacity-85 hover:opacity-100"
+                                    }`}
+                                >
                                     <p className="text-[11px] font-semibold text-[#A62D14]">
-                                        1. Lampiran tidak ditunggu
+                                        1. Lampiran tidak ditunggu (Kasus 1)
                                     </p>
                                     <p className="mt-1 break-all font-mono text-xs font-semibold text-[#1C2430]">
                                         Tagihan-Listrik.pdf
@@ -453,11 +546,20 @@ export default function Unit4({
                                         dan nama serta ekstensi ganda filenya
                                         janggal.
                                     </p>
-                                </div>
+                                </button>
 
-                                <div className="bg-[#FEF6E7] px-4 py-3.5">
+                                <button
+                                    type="button"
+                                    onClick={() => selectTab("whatsapp")}
+                                    aria-pressed={activeTab === "whatsapp"}
+                                    className={`bg-[#FEF6E7] px-4 py-3.5 text-left transition-opacity focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#172B45] ${
+                                        activeTab === "whatsapp"
+                                            ? "opacity-100"
+                                            : "opacity-85 hover:opacity-100"
+                                    }`}
+                                >
                                     <p className="text-[11px] font-semibold text-[#8A4B08]">
-                                        2. QR dari pengirim tak dikenal
+                                        2. QR dari pengirim tak dikenal (Kasus 2)
                                     </p>
                                     <p className="mt-1 break-all font-mono text-xs font-semibold text-[#1C2430]">
                                         drive-akses-gratis.net
@@ -466,7 +568,7 @@ export default function Unit4({
                                         Tidak ada kejelasan asal pengirim, dan
                                         tujuan QR tersembunyi sampai dipindai.
                                     </p>
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </section>
@@ -543,14 +645,16 @@ export default function Unit4({
                 <button
                     type="button"
                     onClick={onFinish}
-                    disabled={!isRevealed || isSaving}
+                    disabled={!bothCasesViewed || !isRevealed || isSaving}
                     className="min-h-12 w-full rounded-lg bg-[#172B45] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#243B59] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45] disabled:bg-[#E6E2D8] disabled:text-[#4E5A69] disabled:active:scale-100 sm:w-auto sm:min-w-48"
                 >
                     {isSaving
                         ? "Menyimpan..."
-                        : isRevealed
-                          ? "Selesaikan Unit 4"
-                          : "Jawab simulasi dulu"}
+                        : !bothCasesViewed
+                          ? "Lihat Kasus 2 (QR) dulu"
+                          : isRevealed
+                            ? "Selesaikan Unit 4"
+                            : "Jawab simulasi dulu"}
                 </button>
             </footer>
 

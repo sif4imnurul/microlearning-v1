@@ -1,7 +1,7 @@
 export type OptionLetter = "A" | "B" | "C" | "D";
 
 // ============================================================================
-// KUNCI JAWABAN INSTRUMEN (Selaras dengan data/instruments/pretest.ts & posttest.ts)
+// KUNCI JAWABAN INSTRUMEN
 // ============================================================================
 export const PRETEST_ANSWER_KEY: Record<string, OptionLetter> = {
     P1: "B",

@@ -67,8 +67,15 @@ export default function Unit6(props: UnitProps) {
                         </div>
                     ))}
                 </div>
-            </Section>
 
+                <p>
+                    Tidak semua pesan atau notifikasi berbahaya. Pesan,
+                    pemberitahuan, atau pembaruan yang berasal dari aplikasi
+                    atau kanal resmi yang Anda buka sendiri umumnya aman.
+                    Langkah di atas dipakai saat Anda ragu, bukan untuk
+                    mencurigai semua hal.
+                </p>
+            </Section>
             <Section title="3. Contoh Kasus (Simulasi Fiktif)">
                 <p>
                     Bayangkan kamu sedang bertransaksi di sebuah marketplace.

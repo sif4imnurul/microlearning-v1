@@ -55,6 +55,7 @@ const SAFE_ACTIONS = [
 export default function Unit1({
     seconds,
     isSaving,
+    isTimeLocked,
     errorMessage,
     onFinish,
 }: UnitProps) {
@@ -62,6 +63,7 @@ export default function Unit1({
     const [decision, setDecision] = useState<Decision>(null);
     const [actionNotice, setActionNotice] = useState<ActionNotice | null>(null);
     const [activeAnatomy, setActiveAnatomy] = useState<AnatomyKey>("domain");
+    const [showScenario, setShowScenario] = useState(false);
     const revealRef = useRef<HTMLDivElement | null>(null);
 
     const isRevealed = decision !== null;
@@ -156,126 +158,163 @@ export default function Unit1({
                 </div>
             </header>
 
-            {/* Primary Focal Point: Authentic Gmail Inbox Simulation */}
-            <section className="mt-6" aria-label="Simulasi email masuk">
-                <GmailSimulator
-                    subject="Pemberitahuan layanan"
-                    senderName="Bank Nusantara Care"
-                    senderEmail="cs@banknusantara-notifikasi.com"
-                    senderInitials="BN"
-                    senderAvatarColor="#1A56DB"
-                    timestamp="10.14 (5 menit lalu)"
-                    details={{
-                        fromName: "Bank Nusantara Care",
-                        fromEmail: "cs@banknusantara-notifikasi.com",
-                        toEmail: "anda@gmail.com",
-                        dateLabel: "Hari ini, 10.14 WIB",
-                        subject: "Pemberitahuan layanan",
-                        mailedBy: "banknusantara-notifikasi.com",
-                        securityLabel: "Enkripsi standar (TLS)",
-                    }}
-                    detailsOpen={detailsOpen}
-                    onToggleDetails={() => setDetailsOpen((prev) => !prev)}
-                    onCloseDetails={() => setDetailsOpen(false)}
-                    revealAnnotations={isRevealed}
-                    suspiciousPart="-notifikasi.com"
-                    onReplyClick={() => handleAttemptEmailAction("Balas")}
-                    onForwardClick={() => handleAttemptEmailAction("Teruskan")}
-                    onReportSpamClick={handleReportSpam}
-                    onDeleteClick={handleDeleteEmail}
-                    actionFeedback={
-                        actionNotice ? (
-                            <div
-                                role="status"
-                                className={`animate-reveal-in flex items-start justify-between gap-3 rounded-lg border px-3.5 py-2.5 text-xs leading-relaxed ${
-                                    actionNotice.tone === "positive"
-                                        ? "border-[#B9DFC8] bg-[#ECF7F1] text-[#145C3A]"
-                                        : "border-[#E6C88C] bg-[#FEF6E7] text-[#8A4B08]"
-                                }`}
-                            >
-                                <p>{actionNotice.message}</p>
-                                <button
-                                    type="button"
-                                    onClick={() => setActionNotice(null)}
-                                    aria-label="Tutup pesan"
-                                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded opacity-80 transition-opacity hover:opacity-100 focus-visible:outline-2 focus-visible:outline-[#172B45]"
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                        ) : null
-                    }
-                >
-                    {/* Realistic Bank Email Inner Card */}
-                    <div className="rounded-lg border border-[#E6E8EC] bg-[#FAFBFC] p-4 sm:p-5">
-                        <div className="flex items-center justify-between border-b border-[#E6E8EC] pb-3">
-                            <span className="text-sm font-bold tracking-tight text-[#1A56DB]">
-                                Bank Nusantara
-                            </span>
-                            <span className="text-xs text-[#5E5E5E]">
-                                Info Layanan Digital
-                            </span>
-                        </div>
+            {/* Initial Point of View Context */}
+            {!showScenario ? (
+                <section className="mt-6 rounded-xl border border-[#DDD9CF] bg-white p-5 sm:p-6">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#4E5A69]">
+                        Konteks skenario
+                    </p>
+                    <h2 className="mt-2 text-lg font-semibold leading-snug text-[#172B45]">
+                        Anda adalah nasabah Bank Nusantara
+                    </h2>
+                    <p className="mt-2 text-sm leading-relaxed text-[#4E5A69]">
+                        Anda menerima pemberitahuan tentang pembaruan layanan
+                        digital bank. Domain resmi yang biasa digunakan Bank
+                        Nusantara adalah{" "}
+                        <strong className="font-semibold text-[#145C3A]">
+                            banknusantara.co.id
+                        </strong>
+                        .
+                    </p>
 
-                        <div className="mt-4 space-y-3 text-sm leading-relaxed text-[#222222]">
-                            <p>Yth. Nasabah,</p>
-                            <p>
-                                Terdapat pembaruan layanan pada akun Anda
-                                terkait penyesuaian sistem keamanan dan fitur
-                                transaksi digital yang berlaku mulai bulan ini.
-                            </p>
-                            <p>
-                                Untuk memastikan layanan mobile banking dan
-                                notifikasi transaksi tetap berjalan normal,
-                                silakan tinjau detail pembaruan melalui tombol
-                                di bawah ini:
-                            </p>
-
-                            <div className="pt-1 pb-2">
-                                <button
-                                    type="button"
-                                    onClick={() => handleClickEmailCta("cta")}
-                                    className="inline-flex min-h-11 items-center justify-center rounded-md bg-[#1A56DB] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1545B5] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
-                                >
-                                    Tinjau Pembaruan Layanan
-                                </button>
-                            </div>
-
-                            <p className="text-xs leading-relaxed text-[#5E5E5E]">
-                                Jika membutuhkan bantuan, kunjungi{" "}
-                                <button
-                                    type="button"
-                                    onClick={() => handleClickEmailCta("help")}
-                                    className="font-medium text-[#1A56DB] underline underline-offset-2 hover:text-[#1545B5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
-                                >
-                                    Pusat Bantuan Bank Nusantara
-                                </button>
-                                .
-                            </p>
-
-                            <div className="border-t border-[#E6E8EC] pt-3 text-xs leading-relaxed text-[#5E5E5E]">
-                                <p className="font-medium text-[#333333]">
-                                    Hormat kami,
-                                    <br />
-                                    Layanan Nasabah Bank Nusantara
-                                </p>
-                                <p className="mt-2">
-                                    Email ini dikirim secara otomatis. Mohon
-                                    tidak membalas langsung ke alamat ini.
-                                </p>
-                            </div>
-                        </div>
+                    <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
+                        <button
+                            type="button"
+                            onClick={() => setShowScenario(true)}
+                            className="min-h-12 flex-1 rounded-lg bg-[#172B45] px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-[#243B59] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
+                        >
+                            Sudah jelas, lanjut ke email
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setShowScenario(true)}
+                            className="min-h-12 flex-1 rounded-lg border border-[#C6C1B5] bg-[#FAF9F5] px-5 py-3 text-sm font-semibold text-[#1C2430] transition-all hover:border-[#172B45] hover:bg-white active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
+                        >
+                            Saya mencurigai pesan itu
+                        </button>
                     </div>
-                </GmailSimulator>
+                </section>
+            ) : (
+                <section className="mt-6" aria-label="Simulasi email masuk">
+                    <GmailSimulator
+                        subject="Pemberitahuan layanan"
+                        senderName="Bank Nusantara Care"
+                        senderEmail="cs@banknusantara-notifikasi.com"
+                        senderInitials="BN"
+                        senderAvatarColor="#1A56DB"
+                        timestamp="10.14 (5 menit lalu)"
+                        details={{
+                            fromName: "Bank Nusantara Care",
+                            fromEmail: "cs@banknusantara-notifikasi.com",
+                            toEmail: "anda@gmail.com",
+                            dateLabel: "Hari ini, 10.14 WIB",
+                            subject: "Pemberitahuan layanan",
+                            mailedBy: "banknusantara-notifikasi.com",
+                            securityLabel: "Enkripsi standar (TLS)",
+                        }}
+                        detailsOpen={detailsOpen}
+                        onToggleDetails={() => setDetailsOpen((prev) => !prev)}
+                        onCloseDetails={() => setDetailsOpen(false)}
+                        revealAnnotations={isRevealed}
+                        suspiciousPart="-notifikasi.com"
+                        onReplyClick={() => handleAttemptEmailAction("Balas")}
+                        onForwardClick={() => handleAttemptEmailAction("Teruskan")}
+                        onReportSpamClick={handleReportSpam}
+                        onDeleteClick={handleDeleteEmail}
+                        actionFeedback={
+                            actionNotice ? (
+                                <div
+                                    role="status"
+                                    className={`animate-reveal-in flex items-start justify-between gap-3 rounded-lg border px-3.5 py-2.5 text-xs leading-relaxed ${
+                                        actionNotice.tone === "positive"
+                                            ? "border-[#B9DFC8] bg-[#ECF7F1] text-[#145C3A]"
+                                            : "border-[#E6C88C] bg-[#FEF6E7] text-[#8A4B08]"
+                                    }`}
+                                >
+                                    <p>{actionNotice.message}</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => setActionNotice(null)}
+                                        aria-label="Tutup pesan"
+                                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded opacity-80 transition-opacity hover:opacity-100 focus-visible:outline-2 focus-visible:outline-[#172B45]"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ) : null
+                        }
+                    >
+                        {/* Realistic Bank Email Inner Card */}
+                        <div className="rounded-lg border border-[#E6E8EC] bg-[#FAFBFC] p-4 sm:p-5">
+                            <div className="flex items-center justify-between border-b border-[#E6E8EC] pb-3">
+                                <span className="text-sm font-bold tracking-tight text-[#1A56DB]">
+                                    Bank Nusantara
+                                </span>
+                                <span className="text-xs text-[#5E5E5E]">
+                                    Info Layanan Digital
+                                </span>
+                            </div>
 
-                <p className="mt-2.5 text-xs text-[#4E5A69]">
-                    Simulasi latihan. Nama layanan dan alamat di atas hanya
-                    rekaan.
-                </p>
-            </section>
+                            <div className="mt-4 space-y-3 text-sm leading-relaxed text-[#222222]">
+                                <p>Yth. Nasabah,</p>
+                                <p>
+                                    Terdapat pembaruan layanan pada akun Anda
+                                    terkait penyesuaian sistem keamanan dan fitur
+                                    transaksi digital yang berlaku mulai bulan ini.
+                                </p>
+                                <p>
+                                    Untuk memastikan layanan mobile banking dan
+                                    notifikasi transaksi tetap berjalan normal,
+                                    silakan tinjau detail pembaruan melalui tombol
+                                    di bawah ini:
+                                </p>
+
+                                <div className="pt-1 pb-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleClickEmailCta("cta")}
+                                        className="inline-flex min-h-11 items-center justify-center rounded-md bg-[#1A56DB] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1545B5] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
+                                    >
+                                        Tinjau Pembaruan Layanan
+                                    </button>
+                                </div>
+
+                                <p className="text-xs leading-relaxed text-[#5E5E5E]">
+                                    Jika membutuhkan bantuan, kunjungi{" "}
+                                    <button
+                                        type="button"
+                                        onClick={() => handleClickEmailCta("help")}
+                                        className="font-medium text-[#1A56DB] underline underline-offset-2 hover:text-[#1545B5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
+                                    >
+                                        Pusat Bantuan Bank Nusantara
+                                    </button>
+                                    .
+                                </p>
+
+                                <div className="border-t border-[#E6E8EC] pt-3 text-xs leading-relaxed text-[#5E5E5E]">
+                                    <p className="font-medium text-[#333333]">
+                                        Hormat kami,
+                                        <br />
+                                        Layanan Nasabah Bank Nusantara
+                                    </p>
+                                    <p className="mt-2">
+                                        Email ini dikirim secara otomatis. Mohon
+                                        tidak membalas langsung ke alamat ini.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </GmailSimulator>
+
+                    <p className="mt-2.5 text-xs text-[#4E5A69]">
+                        Simulasi latihan. Nama layanan dan alamat di atas hanya
+                        rekaan.
+                    </p>
+                </section>
+            )}
 
             {/* Interactive Decision Prompt */}
-            {!isRevealed && (
+            {!isRevealed && showScenario && (
                 <section className="mt-6 rounded-xl border border-[#DDD9CF] bg-white px-5 py-5 sm:px-6">
                     <p className="text-base font-semibold leading-snug text-[#172B45] text-balance">
                         Email ini tertulis dari Bank Nusantara Care. Apakah
@@ -530,14 +569,16 @@ export default function Unit1({
                 <button
                     type="button"
                     onClick={onFinish}
-                    disabled={!isRevealed || isSaving}
+                    disabled={!isRevealed || isSaving || isTimeLocked}
                     className="min-h-12 w-full rounded-lg bg-[#172B45] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#243B59] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45] disabled:bg-[#E6E2D8] disabled:text-[#4E5A69] disabled:active:scale-100 sm:w-auto sm:min-w-48"
                 >
                     {isSaving
                         ? "Menyimpan..."
-                        : isRevealed
-                          ? "Selesaikan Unit 1"
-                          : "Jawab simulasi dulu"}
+                        : isTimeLocked
+                          ? `Tunggu ${60 - seconds} detik lagi`
+                          : isRevealed
+                            ? "Selesaikan Unit 1"
+                            : "Jawab simulasi dulu"}
                 </button>
             </footer>
 

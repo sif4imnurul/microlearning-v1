@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 export type UnitProps = {
     seconds: number;
     isSaving: boolean;
+    isTimeLocked: boolean;
     errorMessage: string;
     onFinish: () => void;
 };

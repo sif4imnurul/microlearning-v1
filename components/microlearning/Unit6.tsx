@@ -50,6 +50,7 @@ const SAFE_ACTIONS = [
 export default function Unit6({
     seconds,
     isSaving,
+    isTimeLocked,
     errorMessage,
     onFinish,
 }: UnitProps) {
@@ -137,6 +138,21 @@ export default function Unit6({
                     </div>
                 </div>
             </header>
+
+            {/* Initial Point of View Context */}
+            <section className="mt-6 rounded-xl border border-[#DDD9CF] bg-white p-5 sm:p-6">
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#4E5A69]">
+                    Konteks skenario
+                </p>
+                <h2 className="mt-2 text-lg font-semibold text-[#172B45]">
+                    Anda baru menyelesaikan transaksi di marketplace
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-[#4E5A69]">
+                    Penjual mengajak Anda melanjutkan transaksi di luar aplikasi.
+                    Riwayat pesanan, identitas toko, dan status pembayaran dapat
+                    diverifikasi melalui fitur marketplace resmi.
+                </p>
+            </section>
 
             {/* Primary Focal Point: Authentic Marketplace Chat Simulation */}
             <section
@@ -359,14 +375,16 @@ export default function Unit6({
                 <button
                     type="button"
                     onClick={onFinish}
-                    disabled={!isRevealed || isSaving}
+                    disabled={!isRevealed || isSaving || isTimeLocked}
                     className="min-h-12 w-full rounded-lg bg-[#172B45] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#243B59] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45] disabled:bg-[#E6E2D8] disabled:text-[#4E5A69] disabled:active:scale-100 sm:w-auto sm:min-w-48"
                 >
                     {isSaving
                         ? "Menyimpan..."
-                        : isRevealed
-                          ? "Selesaikan Unit 6"
-                          : "Jawab simulasi dulu"}
+                        : isTimeLocked
+                          ? `Tunggu ${60 - seconds} detik lagi`
+                          : isRevealed
+                            ? "Selesaikan Unit 6"
+                            : "Jawab simulasi dulu"}
                 </button>
             </footer>
 

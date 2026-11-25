@@ -34,6 +34,7 @@ export default function DevPreviewShell() {
     const currentUnit = UNITS[unitNumber - 1];
     const UnitComponent = currentUnit.Component;
     const isLastUnit = unitNumber === 6;
+    const isTimeLocked = seconds < 60;
 
     function handleSelectUnit(nextUnit: number) {
         setUnitNumber(nextUnit);
@@ -48,10 +49,16 @@ export default function DevPreviewShell() {
     }
 
     function handleContinue() {
+        if (isTimeLocked) return;
         setShowConfirmModal(false);
         if (!isLastUnit) {
             handleSelectUnit(unitNumber + 1);
         }
+    }
+
+    function handleFinish() {
+        if (isTimeLocked) return;
+        setShowConfirmModal(true);
     }
 
     useEffect(() => {
@@ -141,8 +148,9 @@ export default function DevPreviewShell() {
                             key={`${unitNumber}-${resetKey}`}
                             seconds={seconds}
                             isSaving={false}
+                            isTimeLocked={isTimeLocked}
                             errorMessage=""
-                            onFinish={() => setShowConfirmModal(true)}
+                            onFinish={handleFinish}
                         />
                     </section>
                 </div>

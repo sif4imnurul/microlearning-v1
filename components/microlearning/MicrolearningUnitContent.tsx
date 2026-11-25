@@ -17,6 +17,7 @@ type Props = {
 type UnitProps = {
     seconds: number;
     isSaving: boolean;
+    isTimeLocked: boolean;
     errorMessage: string;
     onFinish: () => void;
 };
@@ -182,14 +183,20 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [showConfirmModal, isSaving]);
 
+    const isTimeLocked = seconds < 60;
+
     const handleFinish = useCallback(() => {
         if (!respondentId || isSaving) {
             return;
         }
 
+        if (getElapsedSeconds(startedAt ?? Date.now()) < 60) {
+            return;
+        }
+
         setErrorMessage("");
         setShowConfirmModal(true);
-    }, [respondentId, isSaving]);
+    }, [respondentId, isSaving, startedAt]);
 
     function closeModal() {
         if (isSaving) return;
@@ -200,6 +207,10 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
     async function handleContinue() {
         if (!respondentId || startedAt === null || isSaving) {
+            return;
+        }
+
+        if (getElapsedSeconds(startedAt) < 60) {
             return;
         }
 
@@ -302,7 +313,8 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
     const unitProps: UnitProps = {
         seconds,
-        isSaving: false,
+        isSaving,
+        isTimeLocked,
         errorMessage: showConfirmModal ? "" : errorMessage,
         onFinish: handleFinish,
     };

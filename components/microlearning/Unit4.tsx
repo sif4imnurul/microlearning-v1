@@ -33,6 +33,7 @@ const SAFE_ACTIONS = [
 export default function Unit4({
     seconds,
     isSaving,
+    isTimeLocked,
     errorMessage,
     onFinish,
 }: UnitProps) {
@@ -172,6 +173,21 @@ export default function Unit4({
                     </div>
                 </div>
             </header>
+
+            {/* Initial Point of View Context */}
+            <section className="mt-6 rounded-xl border border-[#DDD9CF] bg-white p-5 sm:p-6">
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#4E5A69]">
+                    Konteks skenario
+                </p>
+                <h2 className="mt-2 text-lg font-semibold text-[#172B45]">
+                    Anda menerima berkas dan permintaan pemindaian QR
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-[#4E5A69]">
+                    Anda bukan sedang menunggu dokumen maupun transfer dari
+                    pengirim yang menghubungi. Periksa dua kasus secara terpisah
+                    sebelum memutuskan apakah lampiran atau kode QR aman.
+                </p>
+            </section>
 
             {/* Primary Focal Point: Two Realistic Scenarios (Email Attachment + WhatsApp QR) */}
             <section
@@ -364,7 +380,7 @@ export default function Unit4({
                                 )}
                             </div>
 
-                            <div className="border-t border-[#ECEEF2] pt-3 text-xs leading-relaxed text-[#5E5E5E]">
+                            <div className="border-t border-[#ECEEF2] pt-3 text-xs leading-relaxed text-[#5E5A5E]">
                                 <p className="font-semibold text-[#1F1F1F]">
                                     Administrasi Tagihan Otomatis
                                 </p>
@@ -645,16 +661,18 @@ export default function Unit4({
                 <button
                     type="button"
                     onClick={onFinish}
-                    disabled={!bothCasesViewed || !isRevealed || isSaving}
+                    disabled={!bothCasesViewed || !isRevealed || isSaving || isTimeLocked}
                     className="min-h-12 w-full rounded-lg bg-[#172B45] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#243B59] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45] disabled:bg-[#E6E2D8] disabled:text-[#4E5A69] disabled:active:scale-100 sm:w-auto sm:min-w-48"
                 >
                     {isSaving
                         ? "Menyimpan..."
-                        : !bothCasesViewed
-                          ? "Lihat Kasus 2 (QR) dulu"
-                          : isRevealed
-                            ? "Selesaikan Unit 4"
-                            : "Jawab simulasi dulu"}
+                        : isTimeLocked
+                          ? `Tunggu ${60 - seconds} detik lagi`
+                          : !bothCasesViewed
+                            ? "Lihat Kasus 2 (QR) dulu"
+                            : isRevealed
+                              ? "Selesaikan Unit 4"
+                              : "Jawab simulasi dulu"}
                 </button>
             </footer>
 

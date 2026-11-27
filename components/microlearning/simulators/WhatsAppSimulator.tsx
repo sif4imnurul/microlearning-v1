@@ -1,7 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-
 type WhatsAppSimulatorProps = {
     senderNumber: string;
     senderStatus: string;
@@ -12,7 +10,6 @@ type WhatsAppSimulatorProps = {
     onToggleQrPreview: () => void;
     onBlockOrReportClick: () => void;
     highlightQr?: boolean;
-    actionFeedback?: ReactNode;
 };
 
 // Deterministic 21x21 QR-like pattern (non-scannable dummy visual for training safety)
@@ -53,7 +50,7 @@ function RealisticQrGraphic() {
     return (
         <svg
             viewBox="0 0 25 25"
-            className="h-36 w-36 rounded-lg border border-[#DDD9CF] bg-white p-1.5"
+            className="h-36 w-36 rounded-lg border border-[#E2E8F0] bg-white p-1.5"
             role="img"
             aria-label="Contoh kode QR latihan"
         >
@@ -82,21 +79,20 @@ export default function WhatsAppSimulator({
     onToggleQrPreview,
     onBlockOrReportClick,
     highlightQr = false,
-    actionFeedback,
 }: WhatsAppSimulatorProps) {
     return (
         <div
-            className="overflow-hidden rounded-xl border border-[#DADCE0] bg-white shadow-[0_2px_10px_rgba(23,43,69,0.08)]"
+            className="overflow-hidden rounded-xl border border-[#CBD5E1] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06),0_8px_24px_rgba(15,23,42,0.06)]"
             style={{
                 fontFamily:
                     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             }}
         >
             {/* Authentic WhatsApp Top Bar */}
-            <div className="flex items-center justify-between gap-3 bg-[#075E54] px-4 py-3 text-white">
-                <div className="flex min-w-0 items-center gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-[#075E54] px-3.5 py-3 text-white sm:flex-nowrap sm:gap-3 sm:px-4">
+                <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
                     <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-semibold text-white"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-semibold text-white sm:h-10 sm:w-10"
                         aria-hidden="true"
                     >
                         <svg
@@ -108,10 +104,10 @@ export default function WhatsAppSimulator({
                         </svg>
                     </div>
                     <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-white">
+                        <p className="text-sm font-semibold leading-snug text-white">
                             {senderNumber}
                         </p>
-                        <p className="truncate text-xs text-[#D9F0EC]">
+                        <p className="text-xs text-[#D9F0EC]">
                             {senderStatus}
                         </p>
                     </div>
@@ -122,28 +118,35 @@ export default function WhatsAppSimulator({
                     onClick={onBlockOrReportClick}
                     className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-white/25 bg-white/10 px-3 text-xs font-medium text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
-                    Laporkan nomor
+                    <span className="sm:hidden">Laporkan</span>
+                    <span className="hidden sm:inline">Laporkan nomor</span>
                 </button>
             </div>
 
-            {/* Unknown Contact Safety Banner (like real WhatsApp) */}
-            <div className="border-b border-[#E2DDD3] bg-[#F7F4EE] px-4 py-2 text-center text-xs text-[#4E5A69]">
+            {/* Unknown Contact Safety Banner */}
+            <div className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2 text-center text-xs text-[#475569]">
                 Pengirim ini tidak ada di daftar kontak Anda.
             </div>
 
-            {/* Chat Canvas */}
+            {/* Chat Canvas (Authentic WhatsApp sand canvas) */}
             <div className="bg-[#EFEAE2] px-4 py-5 sm:px-6">
-                <div className="max-w-[26rem] rounded-xl rounded-tl-sm bg-white p-3.5 shadow-[0_1px_2px_rgba(17,24,39,0.12)]">
+                <div className="max-w-[26rem] rounded-xl rounded-tl-sm bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.12)]">
                     {/* QR Image Card inside chat bubble */}
                     <div
                         className={`flex flex-col items-center rounded-lg border p-3.5 ${
                             highlightQr
-                                ? "border-[#A62D14] bg-[#FDF1EE]"
-                                : "border-[#E5E7EB] bg-[#FAF9F5]"
+                                ? "border-[#F5C2C0] bg-[#FFF8F7]"
+                                : "border-[#E2E8F0] bg-[#F8FAFC]"
                         }`}
                     >
                         <RealisticQrGraphic />
-                        <p className="mt-2 text-[11px] font-medium text-[#4E5A69]">
+                        <p
+                            className={`mt-2 text-[11px] font-medium ${
+                                highlightQr
+                                    ? "text-[#7A1A14]"
+                                    : "text-[#475569]"
+                            }`}
+                        >
                             Album_Foto_Acara.png · Kode QR
                         </p>
 
@@ -151,7 +154,7 @@ export default function WhatsAppSimulator({
                             type="button"
                             onClick={onToggleQrPreview}
                             aria-expanded={qrPreviewOpen}
-                            className="mt-2.5 inline-flex min-h-11 items-center justify-center rounded-lg border border-[#C6C1B5] bg-white px-3.5 py-2 text-xs font-semibold text-[#172B45] transition-colors hover:border-[#172B45] hover:bg-[#FAF9F5] focus-visible:outline-2 focus-visible:outline-[#172B45]"
+                            className="mt-2.5 inline-flex min-h-11 items-center justify-center rounded-lg border border-[#CBD5E1] bg-white px-3.5 py-2 text-xs font-semibold text-[#172B45] transition-colors hover:border-[#172B45] hover:bg-[#F8FAFC] focus-visible:outline-2 focus-visible:outline-[#172B45]"
                         >
                             {qrPreviewOpen
                                 ? "Tutup pratinjau tujuan QR"
@@ -161,15 +164,15 @@ export default function WhatsAppSimulator({
                         {qrPreviewOpen && (
                             <div
                                 role="status"
-                                className="animate-reveal-in mt-2.5 w-full rounded-lg border border-[#E8B7AC] bg-[#FDF1EE] px-3 py-2 text-left text-xs leading-relaxed text-[#A62D14]"
+                                className="animate-reveal-in mt-2.5 w-full rounded-lg border border-[#F5C2C0] bg-[#FEF3F2] px-3 py-2 text-left text-xs leading-relaxed text-[#7A1A14]"
                             >
-                                <p className="font-semibold">
+                                <p className="font-semibold text-[#B42318]">
                                     Alamat tersembunyi di balik QR:
                                 </p>
-                                <p className="mt-0.5 break-all font-mono text-[11px] font-semibold">
+                                <p className="mt-0.5 font-mono text-[11px] font-semibold text-[#B42318] [overflow-wrap:anywhere]">
                                     {qrDestination}
                                 </p>
-                                <p className="mt-1 text-[#4E5A69]">
+                                <p className="mt-1 text-[#7A1A14]">
                                     Sebelum dipindai, Anda tidak bisa melihat ke
                                     mana QR ini mengarah.
                                 </p>
@@ -187,8 +190,6 @@ export default function WhatsAppSimulator({
                         </span>
                     </div>
                 </div>
-
-                {actionFeedback && <div className="mt-3">{actionFeedback}</div>}
             </div>
         </div>
     );

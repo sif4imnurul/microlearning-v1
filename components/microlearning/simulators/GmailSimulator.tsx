@@ -35,8 +35,6 @@ type GmailSimulatorProps = {
     onDeleteClick?: () => void;
     /** Non-shifting Chrome-style bottom-left URL preview shown on link hover */
     hoverStatusUrl?: string | null;
-    /** Transitional prop retained until Units 2-4 migrate to ActionNoticeToast */
-    actionFeedback?: ReactNode;
     children: ReactNode;
 };
 
@@ -92,7 +90,6 @@ export default function GmailSimulator({
     onReportSpamClick,
     onDeleteClick,
     hoverStatusUrl,
-    actionFeedback,
     children,
 }: GmailSimulatorProps) {
     const [isStarred, setIsStarred] = useState(false);
@@ -520,9 +517,6 @@ export default function GmailSimulator({
                                     Teruskan
                                 </button>
                             </div>
-                            {actionFeedback && (
-                                <div className="mt-4">{actionFeedback}</div>
-                            )}
                         </div>
                     </div>
                 </div>

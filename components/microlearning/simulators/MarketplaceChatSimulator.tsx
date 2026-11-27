@@ -1,7 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-
 type MarketplaceChatSimulatorProps = {
     storeName: string;
     productName: string;
@@ -12,7 +10,6 @@ type MarketplaceChatSimulatorProps = {
     onClickOffPlatform: () => void;
     onClickVerifyInApp: () => void;
     onClickReportSeller: () => void;
-    actionFeedback?: ReactNode;
 };
 
 export default function MarketplaceChatSimulator({
@@ -25,18 +22,17 @@ export default function MarketplaceChatSimulator({
     onClickOffPlatform,
     onClickVerifyInApp,
     onClickReportSeller,
-    actionFeedback,
 }: MarketplaceChatSimulatorProps) {
     return (
         <div
-            className="overflow-hidden rounded-xl border border-[#DADCE0] bg-white shadow-[0_2px_10px_rgba(23,43,69,0.08)]"
+            className="overflow-hidden rounded-xl border border-[#CBD5E1] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06),0_8px_24px_rgba(15,23,42,0.06)]"
             style={{
                 fontFamily:
                     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             }}
         >
             {/* Marketplace Chat Top Bar */}
-            <div className="flex items-center justify-between gap-3 border-b border-[#E5E7EB] bg-white px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-[#E2E8F0] bg-white px-4 py-3 sm:flex-nowrap sm:gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                     <div
                         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#172B45] text-xs font-semibold text-white"
@@ -45,10 +41,10 @@ export default function MarketplaceChatSimulator({
                         SJ
                     </div>
                     <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-[#172B45]">
+                        <p className="text-sm font-semibold leading-snug text-[#172B45]">
                             {storeName}
                         </p>
-                        <p className="truncate text-xs text-[#4E5A69]">
+                        <p className="text-xs leading-snug text-[#475569]">
                             Chat Penjual · Aktif 2 menit lalu
                         </p>
                     </div>
@@ -60,8 +56,8 @@ export default function MarketplaceChatSimulator({
                     aria-pressed={reported}
                     className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45] ${
                         reported
-                            ? "border-[#B9DFC8] bg-[#ECF7F1] text-[#145C3A]"
-                            : "border-[#E8B7AC] bg-[#FDF1EE] text-[#A62D14] hover:bg-[#FBE4DF]"
+                            ? "border-[#A7F3D0] bg-[#ECFDF5] text-[#065F46]"
+                            : "border-[#CBD5E1] bg-white text-[#B42318] hover:border-[#F5C2C0] hover:bg-[#FEF3F2]"
                     }`}
                 >
                     {reported ? "Penjual dilaporkan" : "Laporkan"}
@@ -69,10 +65,10 @@ export default function MarketplaceChatSimulator({
             </div>
 
             {/* Attached Product Card Strip */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E5E7EB] bg-[#FAF9F5] px-4 py-2.5 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-xs">
                 <div className="flex items-center gap-3">
                     <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#DDD9CF] bg-white text-[#172B45]"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-[#172B45]"
                         aria-hidden="true"
                     >
                         <svg
@@ -90,7 +86,7 @@ export default function MarketplaceChatSimulator({
                         </svg>
                     </div>
                     <div>
-                        <p className="font-semibold text-[#1C2430]">
+                        <p className="font-semibold text-[#0F172A]">
                             {productName}
                         </p>
                         <p className="mt-0.5 font-mono font-semibold text-[#172B45]">
@@ -99,24 +95,28 @@ export default function MarketplaceChatSimulator({
                     </div>
                 </div>
 
-                <span className="rounded-md bg-[#ECF7F1] px-2.5 py-1 text-[11px] font-medium text-[#145C3A]">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#065F46]">
+                    <span
+                        className="h-1.5 w-1.5 rounded-full bg-[#065F46]"
+                        aria-hidden="true"
+                    />
                     Proteksi Transaksi Aktif
                 </span>
             </div>
 
-            {/* Platform Built-in Safety Banner */}
-            <div className="border-b border-[#E6C88C]/60 bg-[#FEF6E7] px-4 py-2 text-xs text-[#8A4B08]">
+            {/* Platform Built-in Safety Notice */}
+            <div className="border-b border-[#E2E8F0] bg-[#F1F5F9]/75 px-4 py-2 text-xs text-[#475569]">
                 Demi keamanan, tetap berkomunikasi dan bertransaksi di dalam
                 aplikasi marketplace.
             </div>
 
             {/* Chat Conversation Canvas */}
-            <div className="space-y-3 bg-[#F6F7F9] px-4 py-5 sm:px-6">
+            <div className="space-y-3 bg-[#F8FAFC] px-4 py-5 sm:px-6">
                 {/* Buyer Bubble */}
                 <div className="flex justify-end">
                     <div className="max-w-[22rem] rounded-xl rounded-tr-sm bg-[#172B45] px-3.5 py-2.5 text-sm leading-relaxed text-white">
                         <p>Halo kak, barangnya ready untuk dikirim hari ini?</p>
-                        <p className="mt-1 text-right text-[11px] text-[#D8E2EE]">
+                        <p className="mt-1 text-right text-[11px] text-[#CBD5E1]">
                             16.04
                         </p>
                     </div>
@@ -125,58 +125,54 @@ export default function MarketplaceChatSimulator({
                 {/* Seller Bubble */}
                 <div className="flex justify-start">
                     <div
-                        className={`max-w-[27rem] rounded-xl rounded-tl-sm border bg-white px-4 py-3 text-sm leading-relaxed text-[#1F1F1F] shadow-[0_1px_2px_rgba(17,24,39,0.06)] ${
+                        className={`max-w-[27rem] rounded-xl rounded-tl-sm border bg-white px-4 py-3 text-sm leading-relaxed text-[#0F172A] shadow-[0_1px_2px_rgba(15,23,42,0.05)] ${
                             highlightRisks
-                                ? "border-[#E8B7AC]"
-                                : "border-[#E5E7EB]"
+                                ? "border-[#F5C2C0]"
+                                : "border-[#E2E8F0]"
                         }`}
                     >
                         <p>
                             Halo kak, barang ready. Agar proses lebih cepat dan
                             tidak terkena biaya tambahan, silakan lanjutkan
                             komunikasi lewat WhatsApp{" "}
-                            <button
-                                type="button"
-                                onClick={onClickOffPlatform}
-                                className={`inline rounded px-1 py-0.5 font-mono text-xs font-semibold underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-[#172B45] ${
+                            <span
+                                className={`inline rounded-sm px-0.5 py-0.5 font-mono text-xs font-semibold ${
                                     highlightRisks
-                                        ? "bg-[#FDF1EE] text-[#A62D14]"
-                                        : "text-[#172B45] hover:bg-[#EDF2F7]"
+                                        ? "bg-[#FEF3F2] text-[#B42318] underline decoration-[#B42318]/40 underline-offset-2"
+                                        : "bg-[#F1F5F9] text-[#172B45]"
                                 }`}
                             >
                                 {whatsappNumber}
-                            </button>{" "}
+                            </span>{" "}
                             dan lakukan{" "}
                             <span
                                 className={
                                     highlightRisks
-                                        ? "rounded bg-[#FEF6E7] px-1 py-0.5 font-semibold text-[#8A4B08]"
+                                        ? "rounded-sm bg-[#FEF3F2] px-0.5 font-semibold text-[#B42318] underline decoration-[#B42318]/45 underline-offset-2 [box-decoration-break:clone]"
                                         : ""
                                 }
                             >
                                 pembayaran langsung ke rekening pribadi saya
                             </span>
-                            .
+                            {"."}
                         </p>
-                        <p className="mt-1.5 text-right text-[11px] text-[#4E5A69]">
+                        <p className="mt-1.5 text-right text-[11px] text-[#475569]">
                             16.05
                         </p>
                     </div>
                 </div>
-
-                {actionFeedback && <div>{actionFeedback}</div>}
             </div>
 
             {/* Bottom In-App Quick Action Strip */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#E5E7EB] bg-white px-4 py-3">
-                <span className="text-xs text-[#4E5A69]">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#E2E8F0] bg-white px-4 py-3">
+                <span className="text-xs text-[#475569]">
                     Aksi cepat di dalam aplikasi:
                 </span>
                 <div className="flex flex-wrap gap-2">
                     <button
                         type="button"
                         onClick={onClickVerifyInApp}
-                        className="min-h-11 rounded-lg border border-[#C6C1B5] bg-[#FAF9F5] px-3.5 py-2 text-xs font-semibold text-[#172B45] transition-colors hover:border-[#172B45] hover:bg-white focus-visible:outline-2 focus-visible:outline-[#172B45]"
+                        className="min-h-11 rounded-lg border border-[#CBD5E1] bg-[#F8FAFC] px-3.5 py-2 text-xs font-semibold text-[#172B45] transition-colors hover:border-[#172B45] hover:bg-white focus-visible:outline-2 focus-visible:outline-[#172B45]"
                     >
                         Cek transaksi resmi
                     </button>
@@ -184,7 +180,7 @@ export default function MarketplaceChatSimulator({
                     <button
                         type="button"
                         onClick={onClickOffPlatform}
-                        className="min-h-11 rounded-lg border border-[#C6C1B5] bg-[#FAF9F5] px-3.5 py-2 text-xs font-semibold text-[#1C2430] transition-colors hover:border-[#172B45] hover:bg-white focus-visible:outline-2 focus-visible:outline-[#172B45]"
+                        className="min-h-11 rounded-lg border border-[#CBD5E1] bg-[#F8FAFC] px-3.5 py-2 text-xs font-semibold text-[#0F172A] transition-colors hover:border-[#172B45] hover:bg-white focus-visible:outline-2 focus-visible:outline-[#172B45]"
                     >
                         Lanjut ke WhatsApp
                     </button>

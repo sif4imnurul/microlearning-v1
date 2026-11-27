@@ -1,12 +1,37 @@
 
 import type { Metadata } from "next";
-import { IBM_Plex_Sans } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
+  variable: "--font-ibm-plex-sans",
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "Segoe UI",
+    "Roboto",
+    "Helvetica Neue",
+    "Arial",
+    "sans-serif",
+  ],
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  variable: "--font-ibm-plex-mono",
+  fallback: [
+    "ui-monospace",
+    "SFMono-Regular",
+    "Menlo",
+    "Monaco",
+    "Consolas",
+    "monospace",
+  ],
 });
 
 export const metadata: Metadata = {
@@ -20,10 +45,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id">
-      <body className={`${ibmPlexSans.className} min-h-screen antialiased`}>
-        {children}
-      </body>
+    <html
+      lang="id"
+      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`}
+    >
+      <body className="min-h-screen font-sans antialiased">{children}</body>
     </html>
   );
 }

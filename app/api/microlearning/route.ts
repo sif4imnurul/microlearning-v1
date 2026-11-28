@@ -10,14 +10,18 @@ const UNIT_COLUMNS = [
     "u6_seconds",
 ] as const;
 
+const NO_STORE_HEADERS = {
+    "Cache-Control": "no-store, no-cache, must-revalidate",
+};
+
 function validRespondentId(value: unknown): value is string {
     return typeof value === "string" && value.startsWith("A03-");
 }
 
 export async function GET(request: Request) {
-    try {
-        await connection();
+    await connection();
 
+    try {
         const { searchParams } = new URL(request.url);
         const respondentId = searchParams.get("respondentId");
 
@@ -42,7 +46,7 @@ export async function GET(request: Request) {
             );
         }
 
-        let { data: progress, error } = await supabaseAdmin
+        const { data: initialProgress, error } = await supabaseAdmin
             .from("microlearning_progress")
             .select("*")
             .eq("respondent_id", respondentId)
@@ -51,6 +55,8 @@ export async function GET(request: Request) {
         if (error) {
             throw error;
         }
+
+        let progress = initialProgress;
 
         if (!progress) {
             const { data: newProgress, error: insertError } =
@@ -87,10 +93,13 @@ export async function GET(request: Request) {
             }
         }
 
-        return NextResponse.json({
-            success: true,
-            progress,
-        });
+        return NextResponse.json(
+            {
+                success: true,
+                progress,
+            },
+            { headers: NO_STORE_HEADERS }
+        );
     } catch (error: unknown) {
         console.error("Microlearning GET error:", error);
         const detail =
@@ -176,21 +185,39 @@ export async function POST(request: Request) {
             );
         }
 
-        if (progress.current_unit !== unitNumber) {
-            return NextResponse.json(
-                { message: "Unit tidak sesuai urutan pengerjaan." },
-                { status: 403 }
-            );
-        }
-
+        const currentUnit = Number(progress.current_unit);
         const completedUnits = Array.isArray(progress.completed_units)
             ? progress.completed_units
             : [];
 
-        if (completedUnits.includes(`U${unitNumber}`)) {
+        if (
+            completedUnits.includes(`U${unitNumber}`) ||
+            (Number.isInteger(currentUnit) && currentUnit > unitNumber)
+        ) {
+            const fallbackNextUnit = unitNumber === 6 ? 7 : unitNumber + 1;
+            const resolvedNextUnit =
+                Number.isInteger(currentUnit) && currentUnit > unitNumber
+                    ? currentUnit
+                    : fallbackNextUnit;
+
             return NextResponse.json(
-                { message: "Unit ini sudah diselesaikan." },
-                { status: 409 }
+                {
+                    message: "Unit ini sudah diselesaikan.",
+                    nextUnit: resolvedNextUnit,
+                },
+                { status: 409, headers: NO_STORE_HEADERS }
+            );
+        }
+
+        if (currentUnit !== unitNumber) {
+            return NextResponse.json(
+                {
+                    message: "Unit tidak sesuai urutan pengerjaan.",
+                    currentUnit: Number.isInteger(currentUnit)
+                        ? currentUnit
+                        : undefined,
+                },
+                { status: 403, headers: NO_STORE_HEADERS }
             );
         }
 
@@ -227,17 +254,23 @@ export async function POST(request: Request) {
 
         if (!updated || updated.length === 0) {
             return NextResponse.json(
-                { message: "Unit ini sudah diselesaikan." },
-                { status: 409 }
+                {
+                    message: "Unit ini sudah diselesaikan.",
+                    nextUnit: newCurrentUnit,
+                },
+                { status: 409, headers: NO_STORE_HEADERS }
             );
         }
 
-        return NextResponse.json({
-            success: true,
-            message: `Unit ${unitNumber} berhasil diselesaikan.`,
-            nextUnit: newCurrentUnit,
-            totalSeconds: newTotalSeconds,
-        });
+        return NextResponse.json(
+            {
+                success: true,
+                message: `Unit ${unitNumber} berhasil diselesaikan.`,
+                nextUnit: newCurrentUnit,
+                totalSeconds: newTotalSeconds,
+            },
+            { headers: NO_STORE_HEADERS }
+        );
     } catch (error: unknown) {
         console.error("Microlearning POST error:", error);
         const detail =

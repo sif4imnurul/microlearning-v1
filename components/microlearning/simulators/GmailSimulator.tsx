@@ -33,20 +33,38 @@ type GmailSimulatorProps = {
     onForwardClick?: () => void;
     onReportSpamClick?: () => void;
     onDeleteClick?: () => void;
-    /** Optional inline feedback rendered below Reply/Forward */
+    /** Non-shifting Chrome-style bottom-left URL preview shown on link hover */
+    hoverStatusUrl?: string | null;
+    /** Transitional prop retained until Units 2-4 migrate to ActionNoticeToast */
     actionFeedback?: ReactNode;
     children: ReactNode;
 };
 
 function renderHighlightedEmail(email: string, suspiciousPart?: string) {
     if (!suspiciousPart || !email.includes(suspiciousPart)) {
-        return <span className="font-mono text-[#A62D14]">{email}</span>;
+        return (
+            <span className="font-mono font-semibold text-[#B42318] [overflow-wrap:anywhere]">
+                {email}
+            </span>
+        );
     }
     const [before, after] = email.split(suspiciousPart);
+    const atIndex = before.indexOf("@");
+    const beforeWithBreak =
+        atIndex > -1 ? (
+            <>
+                {before.slice(0, atIndex + 1)}
+                <wbr />
+                {before.slice(atIndex + 1)}
+            </>
+        ) : (
+            before
+        );
     return (
-        <span className="font-mono text-[#1F1F1F]">
-            {before}
-            <mark className="whitespace-nowrap rounded bg-[#FDF1EE] px-1 py-0.5 font-semibold text-[#A62D14] ring-1 ring-[#E8B7AC]">
+        <span className="font-mono text-[#1F1F1F] [overflow-wrap:anywhere]">
+            {beforeWithBreak}
+            <wbr />
+            <mark className="inline-block whitespace-nowrap rounded-sm bg-[#FEF3F2] px-[1px] font-semibold text-[#B42318] underline decoration-[#B42318]/45 underline-offset-2">
                 {suspiciousPart}
             </mark>
             {after}
@@ -73,6 +91,7 @@ export default function GmailSimulator({
     onForwardClick,
     onReportSpamClick,
     onDeleteClick,
+    hoverStatusUrl,
     actionFeedback,
     children,
 }: GmailSimulatorProps) {
@@ -83,6 +102,7 @@ export default function GmailSimulator({
 
         function handleKeyDown(event: KeyboardEvent) {
             if (event.key === "Escape") {
+                if (document.querySelector('[role="dialog"]')) return;
                 onCloseDetails?.();
             }
         }
@@ -93,7 +113,7 @@ export default function GmailSimulator({
 
     return (
         <div
-            className="overflow-hidden rounded-xl border border-[#D4D8DF] bg-[#F6F8FC] shadow-[0_2px_6px_rgba(23,43,69,0.08),0_12px_28px_rgba(23,43,69,0.06)]"
+            className="relative overflow-hidden rounded-xl border border-[#CBD5E1] bg-[#F6F8FC] shadow-[0_1px_2px_rgba(15,23,42,0.06),0_8px_24px_rgba(15,23,42,0.06)]"
             style={{
                 fontFamily:
                     "Roboto, 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif",
@@ -148,7 +168,7 @@ export default function GmailSimulator({
                             onClick={onReportSpamClick}
                             title="Laporkan spam"
                             aria-label="Laporkan spam"
-                            className="inline-flex h-11 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-[#444746] transition-colors hover:bg-[#F1F3F4] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
+                            className="inline-flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-[#444746] transition-colors hover:bg-[#F1F3F4] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45]"
                         >
                             <svg
                                 viewBox="0 0 24 24"
@@ -290,20 +310,18 @@ export default function GmailSimulator({
                                     <span
                                         className={`text-sm font-semibold text-[#1F1F1F] transition-colors ${
                                             revealAnnotations
-                                                ? "rounded bg-[#FEF6E7] px-1.5 py-0.5 text-[#8A4B08] ring-1 ring-[#E6C88C]"
+                                                ? "underline decoration-[#94A3B8] decoration-dotted underline-offset-4"
                                                 : ""
                                         }`}
                                     >
                                         {senderName}
                                     </span>
 
-                                    <button
-                                        type="button"
-                                        onClick={onToggleDetails}
-                                        className={`break-words rounded py-0.5 text-left text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45] ${
+                                    <span
+                                        className={`min-w-0 max-w-full py-0.5 text-left text-xs leading-snug transition-colors [overflow-wrap:anywhere] ${
                                             revealAnnotations
-                                                ? "bg-[#FDF1EE] px-1.5 text-[#A62D14]"
-                                                : "px-0.5 text-[#5E5E5E] hover:bg-[#F1F3F4] hover:text-[#1F1F1F]"
+                                                ? "text-[#1F1F1F]"
+                                                : "px-0.5 text-[#5E5E5E]"
                                         }`}
                                     >
                                         &lt;
@@ -314,7 +332,7 @@ export default function GmailSimulator({
                                               )
                                             : senderEmail}
                                         &gt;
-                                    </button>
+                                    </span>
                                 </div>
 
                                 <span className="hidden shrink-0 pt-0.5 text-xs whitespace-nowrap tabular-nums text-[#5E5E5E] sm:inline">
@@ -322,14 +340,14 @@ export default function GmailSimulator({
                                 </span>
                             </div>
 
-                            {/* "kepada saya ▾" interactive trigger with full 44px mobile touch area */}
+                            {/* "kepada saya ▾" interactive trigger with full 44px touch area */}
                             <div className="mt-0.5 flex items-center justify-between gap-2">
                                 <button
                                     type="button"
                                     onClick={onToggleDetails}
                                     aria-expanded={detailsOpen}
                                     aria-label="Tampilkan detail header pengirim"
-                                    className={`-ml-2 inline-flex min-h-11 items-center gap-1 rounded-md px-2 text-xs text-[#5E5E5E] transition-colors active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45] sm:min-h-8 ${
+                                    className={`-ml-2 inline-flex min-h-11 items-center gap-1 rounded-md px-2 text-xs text-[#5E5E5E] transition-colors active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#172B45] ${
                                         detailsOpen
                                             ? "bg-[#E8EAED] text-[#1F1F1F]"
                                             : "hover:bg-[#F1F3F4] hover:text-[#1F1F1F]"
@@ -359,12 +377,12 @@ export default function GmailSimulator({
 
                             {/* Authentic Gmail Header Details Popover */}
                             {detailsOpen && (
-                                <div className="animate-popover-in mt-1.5 max-w-md origin-top-left rounded-lg border border-[#D4D8DF] bg-white p-4 text-xs shadow-[0_6px_20px_rgba(23,43,69,0.12)]">
-                                    <dl className="grid grid-cols-[5.25rem_1fr] gap-x-3 gap-y-2">
+                                <div className="animate-popover-in mt-1.5 max-w-md origin-top-left rounded-lg border border-[#D4D8DF] bg-white p-3.5 text-xs shadow-[0_6px_20px_rgba(23,43,69,0.12)] sm:p-4">
+                                    <dl className="grid grid-cols-[4.25rem_1fr] gap-x-2.5 gap-y-2 sm:grid-cols-[5.25rem_1fr] sm:gap-x-3">
                                         <dt className="text-right text-[#5E5E5E]">
                                             dari:
                                         </dt>
-                                        <dd className="min-w-0 break-words text-[#1F1F1F]">
+                                        <dd className="min-w-0 text-[#1F1F1F] [overflow-wrap:anywhere]">
                                             <span className="font-semibold">
                                                 {details.fromName}
                                             </span>{" "}
@@ -383,28 +401,28 @@ export default function GmailSimulator({
                                         <dt className="text-right text-[#5E5E5E]">
                                             ke:
                                         </dt>
-                                        <dd className="min-w-0 break-words text-[#1F1F1F]">
+                                        <dd className="min-w-0 text-[#1F1F1F] [overflow-wrap:anywhere]">
                                             {details.toEmail}
                                         </dd>
 
                                         <dt className="text-right text-[#5E5E5E]">
                                             tanggal:
                                         </dt>
-                                        <dd className="text-[#1F1F1F]">
+                                        <dd className="min-w-0 text-[#1F1F1F]">
                                             {details.dateLabel}
                                         </dd>
 
                                         <dt className="text-right text-[#5E5E5E]">
                                             subjek:
                                         </dt>
-                                        <dd className="text-[#1F1F1F]">
+                                        <dd className="min-w-0 text-[#1F1F1F]">
                                             {details.subject}
                                         </dd>
 
                                         <dt className="text-right text-[#5E5E5E]">
                                             dikirim oleh:
                                         </dt>
-                                        <dd className="min-w-0 break-words font-mono text-[#1F1F1F]">
+                                        <dd className="min-w-0 font-mono text-[#1F1F1F] [overflow-wrap:anywhere]">
                                             {revealAnnotations
                                                 ? renderHighlightedEmail(
                                                       details.mailedBy,
@@ -502,7 +520,6 @@ export default function GmailSimulator({
                                     Teruskan
                                 </button>
                             </div>
-
                             {actionFeedback && (
                                 <div className="mt-4">{actionFeedback}</div>
                             )}
@@ -510,6 +527,15 @@ export default function GmailSimulator({
                     </div>
                 </div>
             </div>
+
+            {hoverStatusUrl && (
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute bottom-0 left-0 max-w-full truncate rounded-tr-md border-t border-r border-[#CBD5E1] bg-[#F1F3F4]/95 px-2.5 py-1 font-mono text-[11px] text-[#334155] shadow-xs"
+                >
+                    {hoverStatusUrl}
+                </div>
+            )}
         </div>
     );
 }

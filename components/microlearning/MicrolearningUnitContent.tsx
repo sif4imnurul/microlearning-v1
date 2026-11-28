@@ -53,10 +53,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
     const confirmContinueRef = useRef<HTMLButtonElement | null>(null);
     const previouslyFocusedRef = useRef<HTMLElement | null>(null);
     const isSavingRef = useRef(false);
-
-    useEffect(() => {
-        isSavingRef.current = isSaving;
-    }, [isSaving]);
+    const isDoneRef = useRef(false);
 
     const isLastUnit = unitNumber === 6;
     const startKey = `microlearning_start_U${unitNumber}`;
@@ -65,8 +62,12 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
         let isMounted = true;
 
         async function loadProgress() {
+            let isRedirecting = false;
+
             try {
                 if (unitNumber < 1 || unitNumber > 6) {
+                    isRedirecting = true;
+                    setShowConfirmModal(false);
                     router.replace("/consent");
                     return;
                 }
@@ -74,6 +75,8 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                 const id = sessionStorage.getItem("respondent_id");
 
                 if (!id) {
+                    isRedirecting = true;
+                    setShowConfirmModal(false);
                     router.replace("/consent");
                     return;
                 }
@@ -91,6 +94,8 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                 );
 
                 if (response.status === 403) {
+                    isRedirecting = true;
+                    setShowConfirmModal(false);
                     router.replace("/pretest");
                     return;
                 }
@@ -112,12 +117,16 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                     );
                 }
 
-                if (currentUnit === 7) {
+                if (currentUnit >= 7) {
+                    isRedirecting = true;
+                    setShowConfirmModal(false);
                     router.replace("/posttest");
                     return;
                 }
 
                 if (unitNumber !== currentUnit) {
+                    isRedirecting = true;
+                    setShowConfirmModal(false);
                     router.replace(`/microlearning/U${currentUnit}`);
                     return;
                 }
@@ -130,6 +139,11 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                 }
 
                 if (isMounted) {
+                    isSavingRef.current = false;
+                    isDoneRef.current = false;
+                    setIsSaving(false);
+                    setIsDone(false);
+                    setShowConfirmModal(false);
                     setErrorMessage("");
                     setStartedAt(start);
                     setSeconds(getElapsedSeconds(start));
@@ -143,7 +157,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                     );
                 }
             } finally {
-                if (isMounted) {
+                if (isMounted && !isRedirecting) {
                     setIsLoading(false);
                 }
             }
@@ -216,14 +230,16 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
         return () => {
             window.removeEventListener("keydown", onKeyDown, true);
-            previouslyFocusedRef.current?.focus();
+            if (!isDoneRef.current) {
+                previouslyFocusedRef.current?.focus();
+            }
         };
     }, [showConfirmModal]);
 
     const isTimeLocked = seconds < 60;
 
     const handleFinish = useCallback(() => {
-        if (!respondentId || isSaving) {
+        if (!respondentId || isSavingRef.current || isDoneRef.current) {
             return;
         }
 
@@ -233,17 +249,22 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
         setErrorMessage("");
         setShowConfirmModal(true);
-    }, [respondentId, isSaving, startedAt]);
+    }, [respondentId, startedAt]);
 
     function closeModal() {
-        if (isSaving) return;
+        if (isSavingRef.current) return;
 
         setErrorMessage("");
         setShowConfirmModal(false);
     }
 
     async function handleContinue() {
-        if (!respondentId || startedAt === null || isSaving) {
+        if (
+            !respondentId ||
+            startedAt === null ||
+            isSavingRef.current ||
+            isDoneRef.current
+        ) {
             return;
         }
 
@@ -251,6 +272,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
             return;
         }
 
+        isSavingRef.current = true;
         setIsSaving(true);
         setErrorMessage("");
 
@@ -262,6 +284,7 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
 
             const response = await fetch("/api/microlearning", {
                 method: "POST",
+                cache: "no-store",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -272,7 +295,26 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                 }),
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
+
+            if (response.status === 403) {
+                const serverCurrentUnit = Number(result?.currentUnit);
+                if (
+                    Number.isInteger(serverCurrentUnit) &&
+                    serverCurrentUnit >= 1
+                ) {
+                    isDoneRef.current = true;
+                    setIsDone(true);
+                    setShowConfirmModal(false);
+                    sessionStorage.removeItem(startKey);
+                    router.replace(
+                        serverCurrentUnit >= 7
+                            ? "/posttest"
+                            : `/microlearning/U${serverCurrentUnit}`
+                    );
+                    return;
+                }
+            }
 
             if (!response.ok && response.status !== 409) {
                 throw new Error(
@@ -280,16 +322,27 @@ export default function MicrolearningUnitContent({ unitNumber }: Props) {
                 );
             }
 
+            const serverNextUnit = Number(result?.nextUnit);
+            const targetUnit =
+                Number.isInteger(serverNextUnit) && serverNextUnit >= 1
+                    ? serverNextUnit
+                    : isLastUnit
+                        ? 7
+                        : unitNumber + 1;
+
+            isDoneRef.current = true;
             setIsDone(true);
             setSeconds(duration);
+            setShowConfirmModal(false);
             sessionStorage.removeItem(startKey);
 
-            if (isLastUnit) {
+            if (targetUnit >= 7) {
                 router.replace("/posttest");
             } else {
-                router.replace(`/microlearning/U${unitNumber + 1}`);
+                router.replace(`/microlearning/U${targetUnit}`);
             }
         } catch (error) {
+            isSavingRef.current = false;
             setErrorMessage(
                 error instanceof Error
                     ? error.message
